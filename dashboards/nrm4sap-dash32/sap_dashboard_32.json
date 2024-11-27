@@ -1,0 +1,3835 @@
+{
+  "name": "SAP Dashboards 3.2",
+  "description": "Monitor SAP systems and applications performances",
+  "pages": [
+    {
+      "name": "Index",
+      "description": null,
+      "widgets": [
+        {
+          "title": "SAP Systems",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 5,
+            "height": 6
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT uniqueCount(INSTANCE) as 'Num of Instances' WHERE metricName = 'NR.SAP.SYSTEM.CPU_UTILIZATION' SINCE 30 minutes ago FACET SYS_ID"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Instances and Hosts",
+          "layout": {
+            "column": 6,
+            "row": 1,
+            "width": 5,
+            "height": 6
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.CPU_UTILIZATION) as 'CPU Usage %' WHERE metricName = 'NR.SAP.SYSTEM.CPU_UTILIZATION' SINCE 30 minutes ago FACET INSTANCE, HOST_NAME LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Systems",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Trend - Users Logged In",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.USER.LOGON) as 'Number Loggon #' WHERE metricName = 'NR.SAP.SYSTEM.USER.LOGON' AND INSTANCE = 'TOTAL' SINCE 1 day ago TIMESERIES 15 minutes FACET SYS_ID"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend  -  Dialog Response Time (seconds)",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.DIALOG.RESPONSE_TIME) / 1000 as 'RESPONSE TIME' WHERE metricName = 'NR.SAP.SYSTEM.DIALOG.RESPONSE_TIME' AND INSTANCE = 'TOTAL' SINCE 1 day ago TIMESERIES AUTO FACET SYS_ID"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend - Error (count)",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log SELECT count(*) as 'Errors' WHERE level = 'Error' SINCE 1 day ago WHERE agentName != 'Infrastructure' LIMIT MAX TIMESERIES AUTO FACET SYS_ID"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Number of Locks Overtime",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_LOCK_ENTRIES SELECT count(*) FACET SYS_ID, Lock_Mode SINCE 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Active Locks",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 8,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_LOCK_ENTRIES SELECT Table_name, User_Name, SYS_ID, Client, Date AS 'Lock Date', Time AS 'Locking Time', Microseconds,`Locking_period(S)`, Lock_Mode,  Lock_Object, Work_Process, DESTINATION, Counter, Counter_1, Counter_2, Use_Counter, Lock_Argument, Lock_Owner where timestamp = (SELECT latest(timestamp) FROM NR_SAP_LOCK_ENTRIES) SINCE 15 minutes ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Error Logs",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 4
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "logger.log-table-widget"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Log SELECT CATEGORY,SUBCATEGORY, message, level, SYS_ID, INSTANCE, HOST_NAME SINCE 1 day ago WHERE agentName != 'Infrastructure' AND level = 'Error' LIMIT MAX"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Instances",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Trend of Work Process Usage",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.WP.INFORMATION) WHERE metricName = 'NR.SAP.SYSTEM.WP.INFORMATION' and WP_TYPE in ('DIA', 'BTC') AND INSTANCE != 'TOTAL' AND INSTANCE IS NOT NULL SINCE 1 day ago FACET INSTANCE, WP_TYPE, WP_STATUS TIMESERIES 10 minutes "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend of  Memory Usage %",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(`NR.SAP.SYSTEM.MEMORY.EXTENDED_USAGE%`) as Extended, average(`NR.SAP.SYSTEM.MEMORY.HEAP_USAGE%`) as Heap SINCE 1 day ago FACET INSTANCE TIMESERIES AUTO "
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend of Users Logged In",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.USER.LOGON) as 'Number Loggon #' WHERE metricName = 'NR.SAP.SYSTEM.USER.LOGON' AND INSTANCE != 'TOTAL' FACET INSTANCE SINCE 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend  of Dialog Response Time (seconds)",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.DIALOG.RESPONSE_TIME) / 1000 WHERE metricName = 'NR.SAP.SYSTEM.DIALOG.RESPONSE_TIME' FACET INSTANCE SINCE 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Error Trend (count)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 3,
+            "height": 4
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log SELECT count(*) as 'Errors' WHERE level = 'Error' SINCE 1 day ago WHERE agentName != 'Infrastructure' FACET INSTANCE LIMIT MAX TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Error Logs",
+          "layout": {
+            "column": 4,
+            "row": 4,
+            "width": 9,
+            "height": 4
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Log SELECT CATEGORY,SUBCATEGORY, message, level, INSTANCE, HOST_NAME SINCE 1 day ago WHERE agentName != 'Infrastructure' AND instrumentation.provider = 'SAP' LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hosts",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Average CPU Usage %",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.CPU.USAGE.SYSTEM) as 'System', average(NR.SAP.SYSTEM.CPU.USAGE.USER) as 'User', average(NR.SAP.SYSTEM.CPU.USAGE.IOWAIT) as 'IOWait' SINCE 20 minutes ago FACET HOST_NAME ORDER BY HOST_NAME LIMIT MAX"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Trend of Average CPU Usage %",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.CPU.USAGE.SYSTEM) as System, average(NR.SAP.SYSTEM.CPU.USAGE.USER) as User, average(NR.SAP.SYSTEM.CPU.USAGE.IOWAIT) as IOWait SINCE 1 day ago FACET HOST_NAME TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Memory Usage %",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.MEMORY.FREE) / average(NR.SAP.SYSTEM.MEMORY.CONFIGURED) * 100 AS 'Percent Memory Free', average(NR.SAP.SYSTEM.MEMORY.FREE)/1000 as 'GB Free', average(NR.SAP.SYSTEM.MEMORY.CONFIGURED) / 1000 as 'GB Configured' SINCE 20 minutes ago FACET HOST_NAME"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "Trend of Memory Usage %",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT  average(NR.SAP.SYSTEM.MEMORY.FREE) / average(NR.SAP.SYSTEM.MEMORY.CONFIGURED) * 100 AS 'Percent Memory Free' SINCE 1 day ago FACET HOST_NAME TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "File System Usage %",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(NR.SAP.SYSTEM.FILESYSTEM.USAGE) as 'Percentage Used' WHERE metricName = 'NR.SAP.SYSTEM.FILESYSTEM.USAGE' FACET HOST_NAME, OBJECT SINCE 1 hour ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Network Traffic (packets/sec)",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.NETWORK.INBOUND) AS 'Packets received', average(NR.SAP.SYSTEM.NETWORK.OUTBOUND) AS 'Packets transmitted' FACET HOST_NAME SINCE 1 hour ago TIMESERIES AUTO"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Background  Jobs",
+      "description": null,
+      "widgets": [
+        {
+          "title": "By System, Job Server Group, Instance",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_JOB_ALL SELECT uniqueCount(JOB_NAME) as 'No. of Jobs' FACET SYS_ID, JobServerGroup, INSTANCE SINCE 1 day ago LIMIT MAX WHERE Status NOT IN ('RELEASED')"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Background Work Process Usage",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.WP.INFORMATION) WHERE metricName = 'NR.SAP.SYSTEM.WP.INFORMATION' and WP_TYPE in ('BTC') AND INSTANCE != 'TOTAL' SINCE 1 day ago FACET SYS_ID, WP_STATUS TIMESERIES AUTO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Average Run Time & Wait Time(Sec)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_JOB_ALL SELECT average(numeric(Run_Time)), average(numeric(Wait_Time)) FACET SYS_ID, JobServerGroup, INSTANCE TIMESERIES AUTO SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Num of Job Run by Time",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_JOB_ALL SELECT count(*) as 'Num Job Run' SINCE 1 day ago TIMESERIES AUTO FACET SYS_ID, JobServerGroup, INSTANCE"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Job Completion Summary",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_JOB_ALL SELECT filter(uniqueCount(JOB_ID), where Status = 'FINISHED') as '🟢 Finished #', percentage(uniqueCount(JOB_ID), where Status = 'FINISHED') as '🟢 Finished %', filter(uniqueCount(JOB_ID), where Status = 'CANCELED') as '🔴 Canceled #', percentage(uniqueCount(JOB_ID), where Status = 'CANCELED') as '🔴 Canceled %', filter(uniqueCount(JOB_ID), where Status in ('FINISHED', 'CANCELED')) as '#️⃣ Total', average(Wait_Time) as '🕐 Avg Wait', average(Run_Time) as '🕐 Avg Run' WHERE Status IN ('CANCELED', 'FINISHED') SINCE 1 day ago FACET SYS_ID, JOB_NAME LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Status of Last Run",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_JOB_ALL SELECT latest(HOST_NAME), latest(INSTANCE),latest(Status), latest(Run_Time), latest(Wait_Time), latest(SCHEDULE_START_AT), latest(STARTED_AT), latest(ENDED_AT) SINCE 24 hours ago FACET SYS_ID, JOB_NAME LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Failed  Jobs",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "logger.log-table-widget"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log SELECT SUBCATEGORY as Job, message, SYS_ID, INSTANCE, CLIENT  WHERE CATEGORY = 'ABAP Aborted Jobs' SINCE 1 day ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Active Jobs",
+          "layout": {
+            "column": 7,
+            "row": 13,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT SYS_ID, JOB_NAME, JOB_ID, Status, SCHEDULED_AT, SCHEDULE_START_AT, STARTED_AT, Run_Time, Wait_Time FROM (SELECT latest(Status)as Status, latest(Wait_Time) AS Wait_Time, latest(Run_Time) AS Run_Time FROM NR_SAP_JOB_ALL WHERE JOB_NAME IN (FROM NR_SAP_JOB_ALL SELECT uniques(JOB_NAME) WHERE Status IN ('RUNNING', 'READY') LIMIT MAX) FACET SYS_ID, JOB_NAME, JOB_ID, SCHEDULED_AT, SCHEDULE_START_AT, STARTED_AT) WHERE Status IN ('RUNNING', 'READY') SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Dialog Response Time(ms)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(RESPTI)/sum(COUNT) AS 'Avg Responese Time' WHERE TASKTYPE = 'DIALOG' FACET SYS_ID SINCE 1 day ago  TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "HTTP Response Time(ms)",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(RESPTI)/sum(COUNT) AS 'Avg Responese Time' WHERE TASKTYPE IN ('HTTP', 'HTTPS') FACET TASKTYPE, SYS_ID SINCE 1 day ago  TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "RFC Response Time(ms)",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(RESPTI)/sum(COUNT) AS 'Avg Responese Time' WHERE TASKTYPE = 'RFC' FACET SYS_ID SINCE 1 day ago  TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Background Response Time(ms)",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(RESPTI)/sum(COUNT) AS 'Avg Responese Time' WHERE TASKTYPE = 'BACKGROUND' FACET SYS_ID SINCE 1 day ago  TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Dialog Summary",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(COUNT) AS Steps, sum(RESPTI)/sum(COUNT) AS 'Avg RESPTI' WHERE TASKTYPE = 'DIALOG' FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "HTTP Summary",
+          "layout": {
+            "column": 4,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(COUNT) AS Steps, sum(RESPTI)/sum(COUNT) AS 'Avg RESPTI' WHERE TASKTYPE IN ('HTTP', 'HTTPS') FACET SYS_ID, TASKTYPE SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "RFC Summary",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(COUNT) AS Steps, sum(RESPTI)/sum(COUNT) AS 'Avg RESPTI' WHERE TASKTYPE = 'RFC' FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Background Summary",
+          "layout": {
+            "column": 10,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(COUNT) AS Steps, sum(RESPTI)/sum(COUNT) AS 'Avg RESPTI' WHERE TASKTYPE = 'BACKGROUND' FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Task Types",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 3,
+            "height": 5
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(COUNT) AS Steps FACET TASKTYPE SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Transaction Detail",
+          "layout": {
+            "column": 4,
+            "row": 7,
+            "width": 9,
+            "height": 5
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TOP_DIALOG SELECT SYS_ID, REPORT, ACCOUNT, RESPTI, PROCTI, QUEUETI, ROLLWAITTI, CPUTI, GUINETTIME, GUITIME, TERMINALID  SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "HANA",
+      "description": null,
+      "widgets": [
+        {
+          "title": "HANA Avaiilability",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_SERVICES SELECT latest(ACTIVE_STATUS) SINCE 20 minutes ago FACET SYS_ID"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "HANA Services Status",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 8,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_SERVICES SELECT latest(timestamp) AS 'Last Checked', latest(ACTIVE_STATUS) FACET SYS_ID, HOST, PORT, SERVICE_NAME, SQL_PORT, PROCESS_ID SINCE 1 hour ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Memory Usage - Instance (GB)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT latest(NR.SAP.HDB.METRICS) /1024 /1024 /1024 WHERE  KEY_FIGURE IN ('INS_TOTAL_MEM_ALLOCATED_SIZE', 'INS_TOTAL_MEM_PEAK_USED_SIZE','INS_TOTAL_MEM_USED_SIZE') FACET SYS_ID, CASES (WHERE KEY_FIGURE = 'INS_TOTAL_MEM_ALLOCATED_SIZE' AS 'Total Allocated', WHERE KEY_FIGURE = 'INS_TOTAL_MEM_USED_SIZE' AS 'Used', WHERE KEY_FIGURE = 'INS_TOTAL_MEM_PEAK_USED_SIZE' AS 'Peak Used') SINCE 15 minutes ago COMPARE WITH 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Physical Memory-Tenant(GB)",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT latest(NR.SAP.HDB.METRICS)/1024/1024/1024  WHERE KEY_FIGURE in ('FREE_PHYSICAL_MEMORY', 'USED_PHYSICAL_MEMORY') FACET SYS_ID, CASES (WHERE KEY_FIGURE = 'FREE_PHYSICAL_MEMORY' AS 'Free Physical Memory', WHERE KEY_FIGURE = 'USED_PHYSICAL_MEMORY' AS 'Used Physical Memory') SINCE 15 minutes ago COMPARE WITH 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Space Usage (GB)",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT latest(NR.SAP.HDB.METRICS)  WHERE  KEY_FIGURE IN ('LOG','TRACE', 'DATA') FACET SYS_ID, KEY_FIGURE SINCE 15 minutes ago COMPARE WITH 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Swarp Space (GB)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT latest(NR.SAP.HDB.METRICS) /1024 /1024/1024  WHERE  KEY_FIGURE IN ('FREE_SWAP_SPACE', 'USED_SWAP_SPACE') FACET SYS_ID, KEY_FIGURE SINCE 15 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "CPU Usage",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT latest(NR.SAP.HDB.METRICS) WHERE KEY_FIGURE in ('CPU_CORES', 'CPU_THREAD') FACET entity.name, KEY_FIGURE SINCE 15 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "CPU % Trend",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.HDB.METRICS) as CPU_Percent WHERE KEY_FIGURE = 'HOST_CPU' TIMESERIES AUTO SINCE 8 hours ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Alerts",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 4
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_ALERT SELECT * SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Delta Merge Count",
+          "layout": {
+            "column": 1,
+            "row": 14,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_DELTAMERGE SELECT count(*) FACET TYPE SINCE 1 day ago COMPARE WITH 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Delta Merge Detail",
+          "layout": {
+            "column": 5,
+            "row": 14,
+            "width": 8,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_DELTAMERGE SELECT HOST, PORT, SCHEMA_NAME, TABLE_NAME, PART_ID, TYPE, EXECUTION_TIME, MERGED_DELTA_RECORDS, MOTIVATION, ERROR_DESCRIPTION SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Top Column Store Tables",
+          "layout": {
+            "column": 1,
+            "row": 17,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_TOP_CS_TABLE SELECT latest(MEMORY_SIZE_IN_MAIN) /1024 /1024 /1024 AS 'MEMORY SIZE IN MAIN(GB)', latest(RECORD_COUNT) FACET TABLE_NAME, SCHEMA_NAME, HOST, PORT SINCE 1 day ago LIMIT 15"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Top Column Store Tables Size Change",
+          "layout": {
+            "column": 5,
+            "row": 17,
+            "width": 8,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_HDB_TOP_RS_TABLE SELECT latest(numeric(ALLOCATED_FIXED_PART_SIZE) + numeric(ALLOCATED_VARIABLE_PART_SIZE)) /1024 /1024 /1024 AS 'ALLOCATED_SIZE(GB)' FACET TABLE_NAME, SCHEMA_NAME, HOST, PORT SINCE 1 day ago TIMESERIES 2 hours"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Top Row Store Tables",
+          "layout": {
+            "column": 1,
+            "row": 20,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_TOP_RS_TABLE SELECT latest(ALLOCATED_FIXED_PART_SIZE + ALLOCATED_VARIABLE_PART_SIZE) /1024 /1024 /1024 AS 'ALLOCATED_SIZE(GB)' FACET TABLE_NAME, SCHEMA_NAME, HOST, PORT SINCE 120 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Top Row Store Tables Size Change",
+          "layout": {
+            "column": 5,
+            "row": 20,
+            "width": 8,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_HDB_TOP_RS_TABLE SELECT latest(numeric(ALLOCATED_FIXED_PART_SIZE) + numeric(ALLOCATED_VARIABLE_PART_SIZE)) /1024 /1024 /1024 AS 'ALLOCATED_SIZE(GB)' FACET TABLE_NAME, SCHEMA_NAME, HOST, PORT SINCE 1 day ago TIMESERIES 2 hours"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Databases (Non HANA)",
+      "description": null,
+      "widgets": [
+        {
+          "title": "DB Availability( (Percent)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT latest(NR.SAP.DB.KPI.AVAILABLE) FACET entity.name SINCE 20 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 99
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 95
+              }
+            ]
+          }
+        },
+        {
+          "title": "DB Availability Trend (Percent)",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.KPI.AVAILABLE) FACET entity.name TIMESERIES 5 minutes SINCE 1 day ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "DB Size",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [
+              {
+                "name": "Used (GB)",
+                "precision": null,
+                "type": "decimal"
+              },
+              {
+                "name": "DB Size(GB)",
+                "precision": null,
+                "type": "decimal"
+              }
+            ],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.KPI.SIZE)/1000 as `DB Size(GB)`, average(NR.SAP.DB.KPI.USED)/ 1000 as `Used (GB)`, average(NR.SAP.DB.KPI.USED)/average(NR.SAP.DB.KPI.SIZE) * 100 as `Percent Used` FACET entity.name SINCE 20 minutes ago"
+              }
+            ],
+            "thresholds": []
+          }
+        },
+        {
+          "title": "DB Space Usage",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.KPI.USED) / average(NR.SAP.DB.KPI.SIZE) * 100 as `DB Space Usage %` FACET entity.name TIMESERIES 5 minutes SINCE 1 day ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "DB Response Time  (ms)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 10,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT average(DBTI/COUNT) AS 'DB Time' WHERE DBTI IS NOT NULL FACET SYS_ID, TASKTYPE SINCE 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "HTTP/ODATA",
+      "description": null,
+      "widgets": [
+        {
+          "title": "HTTP Status Overview ",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Span SELECT  filter(Count(*), WHERE STATUS_CODE LIKE '2%') AS '🟢 Success', filter(Count(*), WHERE STATUS_CODE LIKE '4%' OR STATUS_CODE LIKE '5%')  AS '🔴 Error', filter(Count(*), WHERE STATUS_CODE LIKE '3%') AS '🟡 Redirect', average(`Call_Time(ms)`), average(`Execution_Time(ms)`) WHERE SAP_ETYPE ='HTTPDEST' FACET SYS_ID, PROTOCOL, DESTINATION , PATH SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "HTTP Call Time",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Span SELECT  average(`Call_Time(ms)`) AS Call_Time WHERE SAP_ETYPE ='HTTPDEST' FACET name  SINCE 1 day ago TIMESERIES AUTO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": " HTTP Call Details",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 8,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Span SELECT name, PATH, SYS_ID, STATUS_CODE, STATUS_PHASE, `Call_Time(ms)`,  `Execution_Time(ms)`, `Receive_Time(ms)`, `Data_Received(b)`, `Data_Send(b)`, INSTANCE,ROOT_CONTEXT_ID, TRANSACTION_ID,CONNECTION_ID WHERE SAP_ETYPE ='HTTPDEST' SINCE  1 day ago\r\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": " HTTP Errors",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "logger.log-table-widget"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Log select SYS_ID, CATEGORY, SUBCATEGORY, ERROR_CATEGORY,  message, ERROR_CONTEXT WHERE ( message LIKE '%HTTP%' OR message LIKE '%http%' ) AND level = 'Error' SINCE 1 day ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "ODATA Service Stats",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_ODATA_SERVICE SELECT count(*) as Num_of_calls, average(Processing_Time), average(Application_Time), average(SAP_GW_Backend_Overhead), average(Request_Size), average(Response_Size) FACET SYS_ID, Service_Name, User_Name, Entity_Type SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "OData Service Error",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_ODATA_SERVICE_ERROR SELECT SYS_ID, Message_ID, ERROR_TEXT, ERROR_COUNT, USERNAME, DESTINATION, REQUEST_URI, REQUEST_DATA, ERROR_COMPONENT, ERROR_CONTEXT,ERROR_PACKAGE, SOURCE_INCLUDE, SO, SOURCE_PROGRAM,SUBNO, EXPIRY_DATE, FIRST_DATE, FIRST_TIME, GW_SERVICE, LOCAL_DATE, LOCAL_TIME, LOCATION, LOG_LEVEL, T100_MSGID, T100_MSGNO, T100_MSGV2, T100_MSGV3 SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "RFCs",
+      "description": null,
+      "widgets": [
+        {
+          "title": "RFC Volume by System - Pie",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 5,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "\r\nFROM Span SELECT count(*) AS RFC_Calls WHERE SAP_ETYPE ='RFCDEST' FACET SYS_ID SINCE 1 day ago\r\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "RFC Performance by Function Module(ms)",
+          "layout": {
+            "column": 6,
+            "row": 1,
+            "width": 7,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Span SELECT average(duration.ms)  AS 'Average Calling Time' WHERE SAP_ETYPE ='RFCDEST' FACET FUNCTION_NAME SINCE 1 day ago\r\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "RFC Throughput by Destination (MB)",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 5,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Span SELECT sum(`DATA_RECEIVE(b)`+ `DATA_SEND(b)`) / 1000000 AS 'Data Transmitted(MB)' WHERE SAP_ETYPE ='RFCDEST' FACET SYS_ID SINCE 1 day ago "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "RFC Performance by Destination(ms)",
+          "layout": {
+            "column": 6,
+            "row": 3,
+            "width": 7,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Span SELECT average(duration.ms) AS 'Average Calling Time' WHERE SAP_ETYPE ='RFCDEST' WHERE DESTINATION NOT IN ('a_rfc', 'bgRFC', 'BGRFC_SUPER') FACET DESTINATION SINCE 1 day ago "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Total tRFC Calls with SYSFAIL Error",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 2,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_TRFC_STATUS SELECT count(*) WHERE RFC_STATUS = 'SYSFAIL' FACET SYS_ID, RFC_STATUS SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Trend - tRFC SYSFAIL Errors",
+          "layout": {
+            "column": 3,
+            "row": 5,
+            "width": 4,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_TRFC_STATUS SELECT count(*) WHERE RFC_STATUS = 'SYSFAIL' FACET SYS_ID, RFC_STATUS SINCE 1 day ago TIMESERIES 10 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Total tRFC Calls with CPIC Error",
+          "layout": {
+            "column": 7,
+            "row": 5,
+            "width": 2,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_TRFC_STATUS SELECT count(*) WHERE RFC_STATUS = 'CPICERR' FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Trend - tRFC CPIC Errors",
+          "layout": {
+            "column": 9,
+            "row": 5,
+            "width": 4,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_TRFC_STATUS SELECT COUNT(*) WHERE RFC_STATUS = 'CPICERR' TIMESERIES 10 minutes FACET SYS_ID, RFC_STATUS SINCE 1 DAY AGO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Total qRFC Calls with SYSFAIL Error",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 2,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_QRFC_STATUS SELECT count(*) WHERE RFC_STATUS = 'SYSFAIL' FACET SYS_ID SINCE 1 day ago COMPARE WITH 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Trend - qRFC SYSFAIL Error",
+          "layout": {
+            "column": 3,
+            "row": 7,
+            "width": 4,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_QRFC_STATUS SELECT count(*) WHERE RFC_STATUS = 'SYSFAIL' FACET SYS_ID SINCE 1 day ago TIMESERIES 10 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Total qRFC Calls with CPIC Error",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 2,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_QRFC_STATUS SELECT count(*) WHERE RFC_STATUS = 'CPICERR' FACET SYS_ID SINCE 1 day ago COMPARE WITH 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Trend - qRFC Calls with CPIC Error",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_QRFC_STATUS SELECT count(*) WHERE RFC_STATUS = 'CPICERR' FACET SYS_ID SINCE 1 day ago TIMESERIES 10 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "TRFC Status",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_TRFC_STATUS SELECT * SINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "QRFC Status",
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_QRFC_STATUS SELECT * SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "RFC Transaction Detail",
+          "layout": {
+            "column": 1,
+            "row": 15,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Span SELECT * WHERE SAP_ETYPE ='RFCDEST' SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "IDOC Trends",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Inbound",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) AS 'Total Number Inbound', filter(uniqueCount(DOCNUM), WHERE STATUS_LIGHT = 'RED') AS 'Total Number Error' WHERE DIRECTION = 'INBOUND' AND KEY_NAME IS NULL SINCE 1 day ago COMPARE WITH 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Outbound",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) AS 'Total Number Outbound', filter(uniqueCount(DOCNUM), WHERE STATUS_LIGHT = 'RED') AS 'Total Number Error' WHERE DIRECTION = 'OUTBOUND' AND KEY_NAME IS NULL SINCE 1 day ago COMPARE WITH 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Total IDOCs - by Direction",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) FACET DIRECTION WHERE KEY_NAME IS NULL SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Trend - by Direction",
+          "layout": {
+            "column": 6,
+            "row": 3,
+            "width": 7,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) WHERE KEY_NAME IS NULL FACET DIRECTION SINCE 7 days ago TIMESERIES 2 hours"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Total IDOCs - by Message Type",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) WHERE KEY_NAME IS NULL FACET MESSAGE_TYPE SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Trend - by Message Type",
+          "layout": {
+            "column": 6,
+            "row": 6,
+            "width": 7,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC  SELECT uniqueCount(DOCNUM) WHERE KEY_NAME IS NULL FACET MESSAGE_TYPE, MESSAGE_TYPE_DESCRIPTION SINCE 7 days ago TIMESERIES 2 hours"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Total IDOCs - by Partner",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) WHERE KEY_NAME IS NULL FACET PRN_DESC SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Trend - by Partner",
+          "layout": {
+            "column": 6,
+            "row": 9,
+            "width": 7,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) WHERE KEY_NAME IS NULL FACET PRN_DESC SINCE 7 days ago TIMESERIES 2 hours"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Error Trend -by Direction",
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC  SELECT uniqueCount(DOCNUM) WHERE STATUS_LIGHT = 'RED' AND KEY_NAME IS NULL SINCE 1 day ago FACET DIRECTION TIMESERIES 1 hour"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Error Trend -by Message Type",
+          "layout": {
+            "column": 7,
+            "row": 12,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) WHERE STATUS_LIGHT = 'RED' AND KEY_NAME IS NULL SINCE 1 day ago FACET MESSAGE_TYPE,MESSAGE_TYPE_DESCRIPTION TIMESERIES 1 hour"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Average Processing Time - by Direction",
+          "layout": {
+            "column": 1,
+            "row": 15,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT average(`Processing_Time(S)`) WHERE `Processing_Time(S)` IS NOT NULL AND KEY_NAME IS NULL SINCE 1 days ago FACET DIRECTION TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Max Processing Time - by Direction",
+          "layout": {
+            "column": 7,
+            "row": 15,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT max(`Processing_Time(S)`) WHERE `Processing_Time(S)` IS NOT NULL AND KEY_NAME IS NULL SINCE 1 days ago FACET DIRECTION TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "IDOC Resolution",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Error Distribution - by Direction",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) WHERE STATUS_LIGHT = 'RED' AND KEY_NAME IS NULL SINCE 1 day ago FACET DIRECTION"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Error Distribution - by Status",
+          "layout": {
+            "column": 6,
+            "row": 1,
+            "width": 7,
+            "height": 9
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) WHERE STATUS_LIGHT = 'RED' AND KEY_NAME IS NULL SINCE 1 days ago FACET STATUS, STATUS_DESCRIPTION"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Error Distribution - by Message Type",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) WHERE STATUS_LIGHT = 'RED' AND KEY_NAME IS NULL SINCE 1 days ago FACET MESSAGE_TYPE"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Error Distribution - by Partner",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT uniqueCount(DOCNUM) WHERE STATUS_LIGHT = 'RED' AND KEY_NAME IS NULL SINCE 1 days ago FACET PRN"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IDOC in Error",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 5
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT DOCNUM, STATUS, STATUS_DESCRIPTION, STATUS_TEXT, STATUS_GROUP, DIRECTION, MESSAGE_TYPE, MESSAGE_TYPE_DESCRIPTION, OUTPUT_MODE, RECEIVER_PARTNER_NUMBER, RECEIVER_PARTNER_TYPE, RECEIVER_PORT, SENDER_PARTNER_NUMBER, SENDER_PARTNER_TYPE, SENDER_PORT, MAX_IDOC_SEGMENT_NUMBER, APP WHERE STATUS_LIGHT = 'RED' AND KEY_NAME IS NULL SINCE 1 days ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Web Services",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Count by System",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ABAP_PROXY SELECT count(*) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Count by Status",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ABAP_PROXY SELECT count(*) SINCE 1 day ago FACET Description, SYS_ID"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Count by Interface",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ABAP_PROXY SELECT count(*) WHERE Sender_Interface_Name Is NOT NULL SINCE 1 day ago FACET Sender_Interface_Name, SYS_ID LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Count by Adapter Type",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ABAP_PROXY  SELECT count(*) WHERE INBOUND_NAME IS NOT NULL SINCE 1 day ago FACET INBOUND_NAME, SYS_ID"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Message Details",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ABAP_PROXY  SELECT SYS_ID, * SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "WS Count by Status Group",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ABAP_WS SELECT count(*) SINCE 1 day ago FACET SYS_ID, STATUS_GROUP"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "WS Count by Message Status",
+          "layout": {
+            "column": 3,
+            "row": 10,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ABAP_WS SELECT count(*) SINCE 1 day ago FACET SYS_ID, Processing_Status "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "WS Count by Adapter Type",
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ABAP_WS  SELECT count(*) SINCE 1 day ago FACET Adapter_Type"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Count by Interface",
+          "layout": {
+            "column": 9,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ABAP_WS SELECT count(*) SINCE 1 day ago FACET Interface"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "ABAP WS Message Details",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ABAP_WS SELECT SYS_ID, Interface, Message_Size, Message_Status, Processing_Status, Location, Queue_Name, Adapter_Type, Communication_Type, Persistency_Type, TOTAL_TIME, Message_ID, Client, Error_ID,Error_Information, Execution_Date, Execution_Time, Expiry_Date,Root_Context_ID,Transaction_ID,Receiver_Interface_Name,Receiver_Interface_Namespace, Receiver_Operation,Sender_Interface_Name,Sender_Interface_Namespace, Sender_Operation,Sender_Party, User, Changed_by SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Oracle",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Buffer Hit Ratio",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": " FROM Metric SELECT average(NR.SAP.DB.ORACLE.BufferRatio) SINCE 1 day ago FACET entity.name TIMESERIES AUTO"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Number of User Calls",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": " FROM Metric SELECT average(NR.SAP.DB.ORACLE.UserCall) SINCE 1 day ago FACET entity.name TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Number of Physical Writes",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.ORACLE.PhyWrite) SINCE 1 day ago FACET entity.name TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Logic Reads",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.ORACLE.LogicalRead) SINCE 1 day ago FACET entity.name TIMESERIES AUTO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Number of User Commits",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.ORACLE.UserCommit) SINCE 1 day ago FACET entity.name TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Number of Physical Read",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.ORACLE.PhyRead) SINCE 1 day ago FACET entity.name TIMESERIES AUTO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "SQL Server",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Cache Ratio",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.SQLSvr.Cache) FACET entity.name, KEY_FIGURE WHERE KEY_FIGURE in ('DataHitRatio', 'ProcHitRatio') TIMESERIES 5 minutes SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Buffer Read",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.SQLSvr.BufferRead) FACET SYS_ID TIMESERIES 5 minutes SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "CPU Usage",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.SQLSvr.CPU) FACET SYS_ID TIMESERIES 5 minutes SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Access Method",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM Metric SELECT average(NR.SAP.DB.SQLSvr.AccessMethod) FACET entity.name, KEY_FIGURE TIMESERIES 5 minutes SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "HANA Replication",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Replication Latest Status Summary",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_REPLICATION SELECT latest(REPLICATION_MODE),latest(REPLICATION_STATUS), latest(SECONDARY_ACTIVE_STATUS), latest(SECONDARY_FULLY_RECOVERABLE),  latest(REPLICATION_STATUS_DETAILS), latest(HOST), latest(PORT), latest(SITE_NAME),  latest(SECONDARY_HOST), latest(SECONDARY_PORT), latest(SECONDARY_SITE_NAME)  FACET SITE_ID, SECONDARY_SITE_ID, VOLUME_ID SINCE  1 days ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Log Replication Lagging",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_HDB_REPLICATION SELECT (latest(numeric(LAST_LOG_POSITION)) - latest(numeric(SHIPPED_LOG_POSITION))) as 'Lagging Log Position',  latest(numeric(SHIPPED_LOG_POSITION)) - latest(numeric(REPLAYED_LOG_POSITION)) AS 'Lagging Log Replayed' FACET SITE_NAME, VOLUME_ID, SECONDARY_SITE_NAME SINCE 1 day ago TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Savepoint Version Last - Shipped",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_HDB_REPLICATION SELECT latest(numeric(LAST_SAVEPOINT_VERSION)) - latest(numeric(SHIPPED_SAVEPOINT_VERSION)) AS LAGGED_SAVEPOINT SINCE 1 day ago TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Log Shipping",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_REPLICATION SELECT SITE_ID, SECONDARY_SITE_ID, VOLUME_ID,LAST_LOG_POSITION_TIME,LAST_LOG_POSITION, SHIPPED_LOG_POSITION_TIME,SHIPPED_LOG_POSITION, REPLAYED_LOG_POSITION_TIME, REPLAYED_LOG_POSITION_TIME, REPLAYED_LOG_POSITION,SHIPPED_LOG_BUFFERS_DURATION SINCE  1 days ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Savepoint Shipping",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_REPLICATION SELECT SITE_NAME, VOLUME_ID, LAST_SAVEPOINT_VERSION, SHIPPED_SAVEPOINT_VERSION,LAST_SAVEPOINT_START_TIME,SHIPPED_SAVEPOINT_START_TIME,LAST_SAVEPOINT_LOG_POSITION, SHIPPED_SAVEPOINT_LOG_POSITION SINCE  1 days ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Full Replica Shipping",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "FROM NR_SAP_HDB_REPLICATION SELECT latest(SHIPPED_FULL_REPLICA_COUNT),latest(SHIPPED_FULL_REPLICA_SIZE),latest(SHIPPED_FULL_REPLICA_DURATION),latest(SHIPPED_LAST_FULL_REPLICA_SIZE) FACET SITE_ID, SECONDARY_SITE_ID, VOLUME_ID, SHIPPED_LAST_FULL_REPLICA_START_TIME, SHIPPED_LAST_FULL_REPLICA_END_TIME SINCE  1 days ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variables": []
+}

@@ -1,0 +1,2647 @@
+{
+  "name": "SAP at a Glance",
+  "description": null,
+  "pages": [
+    {
+      "name": "Availability",
+      "description": null,
+      "widgets": [
+        {
+          "title": "System Availability",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT latest(IF (DISPSTATUS = 'SAPControl-GREEN', '🟢', IF (DISPSTATUS = 'SAPControl-GRAY', '⬤', '🔴'))) AS 'STATUS' FROM NR_SAP_INSTANCE_AVAILABILITY WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) AND (FEATURES LIKE '%MESSAGESERVER%' OR FEATURES IS NULL) FACET SYS_ID SINCE 15 MINUTES AGO "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Server Instance Summary",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT percentage(count(*), WHERE Status = 'SAPControl-GREEN') AS '% Available', filter(count(*), WHERE Status = 'SAPControl-GREEN') AS 'Available', count(*) AS 'Total'  FROM (SELECT latest(DISPSTATUS) AS Status FROM NR_SAP_INSTANCE_AVAILABILITY WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID, INSTANCE LIMIT MAX) FACET SYS_ID SINCE 15 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "% Available",
+                "from": 1,
+                "severity": "success",
+                "to": 1
+              },
+              {
+                "columnName": "% Available",
+                "from": 0,
+                "severity": "critical",
+                "to": 0.99
+              }
+            ]
+          }
+        },
+        {
+          "title": "Host Summary",
+          "layout": {
+            "column": 6,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT  percentage(count(*), WHERE Status = 'SAPControl-GREEN') AS '% Available', filter(count(*), WHERE Status = 'SAPControl-GREEN') AS 'Available', count(*) AS 'Total' FROM (SELECT latest(DISPSTATUS) AS Status FROM NR_SAP_INSTANCE_AVAILABILITY WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID, Virtual_Host LIMIT MAX) FACET SYS_ID SINCE 15 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "% Available",
+                "from": 1,
+                "severity": "success",
+                "to": 1
+              },
+              {
+                "columnName": "% Available",
+                "from": 0,
+                "severity": "critical",
+                "to": 0.99
+              }
+            ]
+          }
+        },
+        {
+          "title": "HANA DB Availability",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT percentage(count(*), WHERE ACTIVE_STATUS = 'YES') AS Available FROM (SELECT latest(ACTIVE_STATUS) AS ACTIVE_STATUS FROM NR_SAP_HDB_SERVICES WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID, SERVICE_NAME) FACET SYS_ID SINCE 15 MINUTES AGO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Available",
+                "from": 1,
+                "severity": "success",
+                "to": 1
+              },
+              {
+                "from": 0,
+                "severity": "critical",
+                "to": 0.99
+              }
+            ]
+          }
+        },
+        {
+          "title": "DB(Non-Hana) Availability",
+          "layout": {
+            "column": 11,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT latest(NR.SAP.DB.KPI.AVAILABLE) AS Available WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET entity.name SINCE 15 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Available",
+                "from": 0,
+                "severity": "critical",
+                "to": 99
+              },
+              {
+                "columnName": "Available",
+                "from": 100,
+                "severity": "success",
+                "to": 100
+              }
+            ]
+          }
+        },
+        {
+          "title": "Server Instance Availability",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT latest(IF (DISPSTATUS = 'SAPControl-GREEN', '🟢', IF (DISPSTATUS = 'SAPControl-GRAY', '⬤', '🔴'))) AS 'STATUS' FROM NR_SAP_INSTANCE_AVAILABILITY WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID, INSTANCE SINCE 15 MINUTES AGO LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Host Availability",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT latest(IF(DISPSTATUS = 'SAPControl-GREEN', '🟢', IF(DISPSTATUS = 'SAPControl-GRAY', '⬤', '🔴'))) AS 'STATUS' FROM NR_SAP_INSTANCE_AVAILABILITY WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }} )) FACET SYS_ID, Virtual_Host SINCE 15 MINUTES AGO LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Processes Availability",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT latest(IF (DISPSTATUS = 'SAPControl-GREEN', '🟢', '🔴')) AS 'STATUS' FROM NR_SAP_INSTANCE_INFORMATION WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID, INSTANCE, DESCRIPTION AS Service SINCE 15 MINUTES AGO LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "HANA Services",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT IF (latest(ACTIVE_STATUS) = 'YES','🟢', '🔴') AS 'Available'  FROM NR_SAP_HDB_SERVICES WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID, SERVICE_NAME SINCE 15 MINUTES AGO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "HTTP Destinations",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT IF (latest(NR.SAP.HTTP.CHECK) = 1, '🟢', '🔴') AS Available WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET DESTINATION SINCE 20 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "RFC Destinations",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT IF (latest(NR.SAP.RFC.AVAILABILITY) = 1, '🟢', '🔴') AS Available WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET DESTINATION SINCE 20 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Performance",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Dialog Response Time (seconds)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT latest(RESPTI/COUNT) / 1000 AS 'Response Time' WHERE TASKTYPE = 'DIALOG' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Response Time",
+                "from": 0,
+                "severity": "success",
+                "to": 1000
+              },
+              {
+                "columnName": "Response Time",
+                "from": 1000,
+                "severity": "warning",
+                "to": 1500
+              },
+              {
+                "columnName": "Response Time",
+                "from": 1500,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "RFC Response Time (seconds)",
+          "layout": {
+            "column": 3,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT latest(RESPTI/COUNT) / 1000 AS 'Response Time' WHERE TASKTYPE = 'RFC' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Response Time",
+                "from": 0,
+                "severity": "success",
+                "to": 1000
+              },
+              {
+                "columnName": "Response Time",
+                "from": 1000,
+                "severity": "warning",
+                "to": 1500
+              },
+              {
+                "columnName": "Response Time",
+                "from": 1500,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "HTTP Response Time (seconds)",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT latest(RESPTI/COUNT) / 1000 AS 'Response Time' WHERE TASKTYPE IN ('HTTP', 'HTTPS') AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Response Time",
+                "from": 0,
+                "severity": "success",
+                "to": 1000
+              },
+              {
+                "columnName": "Response Time",
+                "from": 1000,
+                "severity": "warning",
+                "to": 1500
+              },
+              {
+                "columnName": "Response Time",
+                "from": 1500,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Update Response Time (seconds)",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT average(NR.SAP.SYSTEM.UPDATE.RESPONSE_TIME) / 1000 AS 'Response Time' FROM Metric WHERE INSTANCE = 'TOTAL' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Response Time",
+                "from": 0,
+                "severity": "success",
+                "to": 1000
+              },
+              {
+                "columnName": "Response Time",
+                "from": 1000,
+                "severity": "warning",
+                "to": 1500
+              },
+              {
+                "columnName": "Response Time",
+                "from": 1500,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "OData Service Response Time (ms)",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT average(Processing_Time) as 'Response_Time' FROM NR_SAP_ODATA_SERVICE WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Response_Time",
+                "from": 0,
+                "severity": "success",
+                "to": 20000
+              },
+              {
+                "columnName": "Response_Time",
+                "from": 20000,
+                "severity": "warning",
+                "to": 60000
+              },
+              {
+                "columnName": "Response_Time",
+                "from": 600000,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "DB Response Time  (ms)",
+          "layout": {
+            "column": 11,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT latest(RESPTI/COUNT) AS 'DB Time' WHERE TASKTYPE = 'RFC' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "DB Time",
+                "from": 0,
+                "severity": "success",
+                "to": 3000
+              },
+              {
+                "columnName": "DB Time",
+                "from": 3000,
+                "severity": "warning",
+                "to": 4000
+              },
+              {
+                "columnName": "DB Time",
+                "from": 4000,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Dialog Work Process Available %",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(sum(NR.SAP.SYSTEM.WP.INFORMATION), WHERE WP_STATUS = 'Free')/ filter(sum(NR.SAP.SYSTEM.WP.INFORMATION), WHERE WP_STATUS = 'All') * 100 AS '% Availabe' FROM Metric where metricName = 'NR.SAP.SYSTEM.WP.INFORMATION' AND WP_TYPE = 'DIA' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID since 15 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "% Availabe",
+                "from": 0,
+                "severity": "critical",
+                "to": 10
+              },
+              {
+                "columnName": "% Availabe",
+                "from": 10,
+                "severity": "warning",
+                "to": 20
+              },
+              {
+                "columnName": "% Availabe",
+                "from": 20,
+                "severity": "success",
+                "to": 100
+              }
+            ]
+          }
+        },
+        {
+          "title": "Background Work Process Available %",
+          "layout": {
+            "column": 3,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(sum(NR.SAP.SYSTEM.WP.INFORMATION), WHERE WP_STATUS = 'Free')/ filter(sum(NR.SAP.SYSTEM.WP.INFORMATION), WHERE WP_STATUS = 'All') * 100 AS '% Availabe' FROM Metric where metricName = 'NR.SAP.SYSTEM.WP.INFORMATION' AND WP_TYPE = 'BTC' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID since 15 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "% Availabe",
+                "from": 0,
+                "severity": "critical",
+                "to": 10
+              },
+              {
+                "columnName": "% Availabe",
+                "from": 10,
+                "severity": "warning",
+                "to": 20
+              },
+              {
+                "columnName": "% Availabe",
+                "from": 20,
+                "severity": "success",
+                "to": 100
+              }
+            ]
+          }
+        },
+        {
+          "title": "Average CPU Usage %",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.CPU_UTILIZATION) as Avg, max(NR.SAP.SYSTEM.CPU_UTILIZATION) as Max WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) SINCE 15 minutes ago FACET SYS_ID"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Avg",
+                "from": 95,
+                "severity": "critical",
+                "to": 100
+              },
+              {
+                "columnName": "Avg",
+                "from": 0,
+                "severity": "success",
+                "to": 70
+              },
+              {
+                "columnName": "Max",
+                "from": 95,
+                "severity": "warning",
+                "to": 100
+              },
+              {
+                "columnName": "Max",
+                "from": 0,
+                "severity": "success",
+                "to": 90
+              },
+              {
+                "columnName": "Max",
+                "from": 90,
+                "severity": "warning",
+                "to": 95
+              }
+            ]
+          }
+        },
+        {
+          "title": "Extended Memory Usage %",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(`NR.SAP.SYSTEM.MEMORY.EXTENDED_USAGE%`) as Avg, max(`NR.SAP.SYSTEM.MEMORY.EXTENDED_USAGE%`) as Max WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) SINCE 1 day ago FACET SYS_ID"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Avg",
+                "from": 0,
+                "severity": "success",
+                "to": 80
+              },
+              {
+                "columnName": "Avg",
+                "from": 80,
+                "severity": "warning",
+                "to": 90
+              },
+              {
+                "columnName": "Avg",
+                "from": 90,
+                "severity": "critical",
+                "to": 100
+              },
+              {
+                "columnName": "Max",
+                "from": 0,
+                "severity": "success",
+                "to": 90
+              },
+              {
+                "columnName": "Max",
+                "from": 90,
+                "severity": "warning",
+                "to": 100
+              }
+            ]
+          }
+        },
+        {
+          "title": "Heap Memory Usage %",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(`NR.SAP.SYSTEM.MEMORY.HEAP_USAGE%`) as Avg, max(`NR.SAP.SYSTEM.MEMORY.HEAP_USAGE%`) as Max WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) SINCE 1 day ago FACET SYS_ID"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Avg",
+                "from": 0,
+                "severity": "success",
+                "to": 80
+              },
+              {
+                "columnName": "Avg",
+                "from": 80,
+                "severity": "warning",
+                "to": 90
+              },
+              {
+                "columnName": "Avg",
+                "from": 90,
+                "severity": "critical",
+                "to": 100
+              },
+              {
+                "columnName": "Max",
+                "from": 0,
+                "severity": "success",
+                "to": 90
+              },
+              {
+                "columnName": "Max",
+                "from": 90,
+                "severity": "warning",
+                "to": 100
+              }
+            ]
+          }
+        },
+        {
+          "title": "Queue Entries %",
+          "layout": {
+            "column": 11,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_QRFC_STATUS SELECT average(numeric(ENTRIES)) as Avg, max(numeric(ENTRIES)) as Max WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID SINCE 1 days ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Avg",
+                "from": 0,
+                "severity": "success",
+                "to": 80
+              },
+              {
+                "columnName": "Avg",
+                "from": 80,
+                "severity": "warning",
+                "to": 90
+              },
+              {
+                "columnName": "Avg",
+                "from": 90,
+                "severity": "critical",
+                "to": 100
+              },
+              {
+                "columnName": "Max",
+                "from": 0,
+                "severity": "success",
+                "to": 90
+              },
+              {
+                "columnName": "Max",
+                "from": 90,
+                "severity": "warning",
+                "to": 100
+              }
+            ]
+          }
+        },
+        {
+          "title": "Work Processes Running Long",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(count(*), WHERE etime > 300000) AS 'Count' FROM (SELECT latest(numeric(WP_ELTIME)) AS etime FROM NR_SAP_WORK_PROCESS WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID, WP_PID) FACET SYS_ID SINCE 15 minutes ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Count",
+                "from": 0,
+                "severity": "success",
+                "to": 1
+              },
+              {
+                "columnName": "Count",
+                "from": 1,
+                "severity": "warning",
+                "to": 5
+              },
+              {
+                "columnName": "Count",
+                "from": 5,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Long holding locks",
+          "layout": {
+            "column": 4,
+            "row": 7,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT count(*) AS 'Count' FROM NR_SAP_LOCK_ENTRIES WHERE timestamp in (SELECT latest(timestamp) FROM NR_SAP_LOCK_ENTRIES WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}))) WHERE `Locking_period(S)` > 60000 AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID SINCE 15 minutes ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Count",
+                "from": 0,
+                "severity": "success",
+                "to": 1
+              },
+              {
+                "columnName": "Count",
+                "from": 1,
+                "severity": "warning",
+                "to": 5
+              },
+              {
+                "columnName": "Count",
+                "from": 5,
+                "severity": "critical"
+              },
+              {
+                "columnName": "Count"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Unique Active User #",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT uniqueCount(User_ID) AS Count FROM NR_SAP_SYSTEM_USER_SESSION WHERE timestamp in (SELECT latest(timestamp) FROM NR_SAP_SYSTEM_USER_SESSION WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID) SINCE 15 minutes ago FACET SYS_ID LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Count",
+                "from": 0,
+                "severity": "success",
+                "to": 100
+              },
+              {
+                "columnName": "Count",
+                "from": 100,
+                "severity": "warning",
+                "to": 150
+              },
+              {
+                "columnName": "Count",
+                "from": 150,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Active User Sessions",
+          "layout": {
+            "column": 10,
+            "row": 7,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(count(*), WHERE Session_Type = 'GUI') AS 'GUI', filter(count(*), WHERE Session_Type = 'BATCH') AS 'BATCH'  FROM NR_SAP_SYSTEM_USER_SESSION WHERE timestamp in (SELECT latest(timestamp) FROM NR_SAP_SYSTEM_USER_SESSION FACET SYS_ID) AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) SINCE 15 minutes ago FACET SYS_ID LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "GUI",
+                "from": 0,
+                "severity": "success",
+                "to": 100
+              },
+              {
+                "columnName": "GUI",
+                "from": 100,
+                "severity": "warning",
+                "to": 150
+              },
+              {
+                "columnName": "GUI",
+                "from": 150,
+                "severity": "critical"
+              },
+              {
+                "columnName": "BATCH",
+                "from": 0,
+                "severity": "success",
+                "to": 100
+              },
+              {
+                "columnName": "BATCH",
+                "from": 100,
+                "severity": "warning",
+                "to": 150
+              },
+              {
+                "columnName": "BATCH",
+                "from": 150,
+                "severity": "critical"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Perfomance Trends",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Dialog Response Time(ms)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT average(RESPTI/COUNT) AS 'Response Time' WHERE TASKTYPE = 'DIALOG' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago LIMIT MAX TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true,
+              "thresholds": [
+                {
+                  "from": 1000,
+                  "name": "Good",
+                  "severity": "critical"
+                },
+                {
+                  "from": 0,
+                  "name": "Slow",
+                  "severity": "success",
+                  "to": 1000
+                }
+              ]
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "RFC Response Time",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT average(RESPTI/COUNT) / 1000 AS 'Response Time' WHERE TASKTYPE = 'RFC' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago LIMIT MAX TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true,
+              "thresholds": [
+                {
+                  "from": 1000,
+                  "name": "T1",
+                  "severity": "warning"
+                }
+              ]
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "HTTP Response Time",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT average(RESPTI/COUNT) / 1000 AS 'Response Time' WHERE TASKTYPE IN ('HTTP', 'HTTPS') AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago LIMIT MAX TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true,
+              "thresholds": [
+                {
+                  "from": 3000,
+                  "name": "Critical",
+                  "severity": "critical"
+                }
+              ]
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Update Response Time",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.UPDATE.RESPONSE_TIME) / 1000 as 'RESPONSE TIME' WHERE metricName = 'NR.SAP.SYSTEM.UPDATE.RESPONSE_TIME' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) SINCE 1 day ago TIMESERIES AUTO FACET SYS_ID"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "OData Service Response Time",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT average(Processing_Time) as 'Response_Time' FROM NR_SAP_ODATA_SERVICE WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago TIMESERIES 1 hour LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "DB Response TIme",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT average(DBTI/COUNT) / 1000 AS 'DB Time' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago LIMIT MAX TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend of Average CPU Usage %",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(NR.SAP.SYSTEM.CPU_UTILIZATION) as CPU WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) SINCE 1 day ago FACET SYS_ID TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend - Extended Memory Usage %",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(`NR.SAP.SYSTEM.MEMORY.EXTENDED_USAGE%`) as Extended WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) SINCE 1 day ago FACET SYS_ID TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend - Heap Memory Usage %",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Metric SELECT average(`NR.SAP.SYSTEM.MEMORY.HEAP_USAGE%`) as Heap WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) SINCE 1 day ago FACET SYS_ID TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend - Dialog Work Process Available %",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(average(NR.SAP.SYSTEM.WP.INFORMATION), WHERE WP_STATUS = 'Free') / filter(average(NR.SAP.SYSTEM.WP.INFORMATION), WHERE WP_STATUS = 'All') * 100 AS '% Availabe' FROM Metric where metricName = 'NR.SAP.SYSTEM.WP.INFORMATION' AND WP_TYPE = 'DIA' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID since 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend - Dialog Work Process Available %",
+          "layout": {
+            "column": 5,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(average(NR.SAP.SYSTEM.WP.INFORMATION), WHERE WP_STATUS = 'Free') / filter(average(NR.SAP.SYSTEM.WP.INFORMATION), WHERE WP_STATUS = 'All') * 100 AS '% Availabe' FROM Metric where metricName = 'NR.SAP.SYSTEM.WP.INFORMATION' AND WP_TYPE = 'DIA' AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID since 1 day ago TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend - Unique User Count",
+          "layout": {
+            "column": 9,
+            "row": 10,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT uniqueCount(User_ID) AS Count FROM NR_SAP_SYSTEM_USER_SESSION WHERE timestamp in (SELECT latest(timestamp) FROM NR_SAP_SYSTEM_USER_SESSION WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) FACET SYS_ID) SINCE 1 day ago FACET SYS_ID TIMESERIES AUTO LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Trend - Active User Sessions",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(count(*), WHERE Session_Type = 'GUI') AS 'GUI', filter(count(*), WHERE Session_Type = 'BATCH') AS 'BATCH'  FROM NR_SAP_SYSTEM_USER_SESSION WHERE timestamp in (SELECT latest(timestamp) FROM NR_SAP_SYSTEM_USER_SESSION FACET SYS_ID) AND SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }})) SINCE 1 day ago TIMESERIES AUTO FACET SYS_ID LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "System Error",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Alerts  Opened on New Relic",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NrAiIncident SELECT filter(count(*), WHERE tags.type = 'NRQL Query') AS 'Threshold', filter(count(*), WHERE tags.type = 'NRQL Baseline') AS Baseline WHERE event = 'open' AND priority = 'critical' AND tags.sap.system  IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET tags.sap.system AS System SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Threshold",
+                "from": 30,
+                "severity": "critical"
+              },
+              {
+                "columnName": "Threshold",
+                "from": 5,
+                "severity": "warning",
+                "to": 30
+              },
+              {
+                "columnName": "Threshold",
+                "from": 0,
+                "severity": "success",
+                "to": 5
+              },
+              {
+                "columnName": "Baseline",
+                "from": 0,
+                "severity": "success",
+                "to": 5
+              },
+              {
+                "columnName": "Baseline",
+                "from": 5,
+                "severity": "warning",
+                "to": 30
+              },
+              {
+                "columnName": "Baseline",
+                "from": 30,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Run Time Error",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Log SELECT count(*) AS 'Errors' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID WHERE CATEGORY = 'ABAP Runtime Error' SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Errors",
+                "from": 30,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "System Error",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Log SELECT count(*) AS 'Errors' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID WHERE CATEGORY = 'ABAP Syslog' SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Errors",
+                "from": 30,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Application Error",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Log SELECT count(*) AS 'Errors' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID WHERE CATEGORY = 'ABAP Application Log' SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Errors",
+                "from": 30,
+                "severity": "critical"
+              },
+              {
+                "columnName": "Errors",
+                "from": 1,
+                "severity": "warning",
+                "to": 30
+              },
+              {
+                "columnName": "Errors",
+                "from": 0,
+                "severity": "success",
+                "to": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Failed Jobs",
+          "layout": {
+            "column": 11,
+            "row": 1,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Log SELECT count(*) AS 'Errors' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID WHERE CATEGORY = 'ABAP Aborted Jobs' SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Errors",
+                "from": 30,
+                "severity": "critical"
+              },
+              {
+                "columnName": "Errors",
+                "from": 1,
+                "severity": "warning",
+                "to": 30
+              },
+              {
+                "columnName": "Errors",
+                "from": 0,
+                "severity": "success",
+                "to": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "Work Process Not Available",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(count(*), WHERE free < 1) AS Count FROM (SELECT average(NR.SAP.SYSTEM.WP.INFORMATION) AS free FROM Metric WHERE WP_TYPE IN ('BTC', 'DIA') AND WP_STATUS = 'Free' TIMESERIES 5 minutes FACET SYS_ID, INSTANCE, WP_TYPE LIMIT MAX) WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Count",
+                "from": 0,
+                "severity": "success",
+                "to": 0
+              },
+              {
+                "columnName": "Count",
+                "from": 1,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "CPU Busy Events",
+          "layout": {
+            "column": 3,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(count(*), WHERE cpu >= 99) AS 'CPU Busy' FROM (SELECT average(NR.SAP.SYSTEM.CPU_UTILIZATION) AS cpu FROM Metric WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) TIMESERIES 5 minutes FACET SYS_ID, INSTANCE LIMIT MAX) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "CPU Busy",
+                "from": 0,
+                "severity": "success",
+                "to": 0
+              },
+              {
+                "columnName": "CPU Busy",
+                "from": 1,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Not Enough Ext Memory ",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(count(*), WHERE MaxUsed > 98) AS Count FROM (FROM Metric SELECT max(NR.SAP.SYSTEM.MEMORY.EXTENDED_USAGE) as 'Extend Memory Usage' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID, INSTANCE TIMESERIES AUTO LIMIT MAX) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Count",
+                "from": 0,
+                "severity": "success",
+                "to": 0
+              },
+              {
+                "columnName": "Count",
+                "from": 1,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Not Enough Heap Memory ",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(count(*), WHERE MaxUsed > 98) AS Count FROM (FROM Metric SELECT max(NR.SAP.SYSTEM.MEMORY.HEAP_USAGE) as 'HEAP Memory Usage' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID TIMESERIES AUTO LIMIT MAX) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Count",
+                "from": 0,
+                "severity": "success",
+                "to": 0
+              },
+              {
+                "columnName": "Count",
+                "from": 1,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "File System Full ",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT filter(count(*), WHERE MaxUsed = 1) AS Count FROM (FROM Metric SELECT max(NR.SAP.SYSTEM.FILESYSTEM.USAGE) as 'MaxUsed' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET HOST_NAME, OBJECT, SYS_ID TIMESERIES AUTO LIMIT MAX) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Count",
+                "from": 0,
+                "severity": "success",
+                "to": 0
+              },
+              {
+                "columnName": "Count",
+                "from": 1,
+                "severity": "warning",
+                "to": 100
+              },
+              {
+                "columnName": "Count",
+                "from": 100,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Database Alerts",
+          "layout": {
+            "column": 11,
+            "row": 4,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_HDB_ALERT SELECT count(*) AS 'DB Alerts' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "DB Alerts",
+                "from": 1,
+                "severity": "warning",
+                "to": 100
+              },
+              {
+                "columnName": "DB Alerts",
+                "from": 100,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Audit Errors",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Log SELECT count(*) AS 'Errors' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID WHERE CATEGORY = 'ABAP Audit Logs' SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Errors",
+                "from": 30,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "OData Service Error",
+          "layout": {
+            "column": 3,
+            "row": 7,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ODATA_SERVICE_ERROR SELECT count(*) AS 'Errors' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Errors",
+                "from": 10,
+                "severity": "warning",
+                "to": 100
+              },
+              {
+                "from": 100,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Web Service Provider/Consumer",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Log SELECT count(*) AS 'Errors' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID, CATEGORY WHERE CATEGORY IN ('Web Service Consumer', 'Web Service Provider')  SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Errors",
+                "from": 30,
+                "severity": "critical"
+              },
+              {
+                "columnName": "Errors",
+                "from": 1,
+                "severity": "warning",
+                "to": 30
+              },
+              {
+                "columnName": "Errors",
+                "from": 0,
+                "severity": "success",
+                "to": 0
+              }
+            ]
+          }
+        },
+        {
+          "title": "TRFC Error",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TRFC_STATUS SELECT filter(count(*), WHERE RFC_STATUS = 'SYSFAIL') AS SYSFAIL, filter(count(*), WHERE REC_STATUS = 'CPICERR') AS CPICERR WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Errors",
+                "from": 0,
+                "severity": "success",
+                "to": 0
+              },
+              {
+                "from": 0,
+                "severity": "warning",
+                "to": 1000
+              },
+              {
+                "from": 1000,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "QRFC Error",
+          "layout": {
+            "column": 9,
+            "row": 7,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_QRFC_STATUS SELECT filter(count(*), WHERE RFC_STATUS = 'SYSFAIL') AS SYSFAIL, filter(count(*), WHERE REC_STATUS = 'CPICERR') AS CPICERR WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Errors",
+                "from": 0,
+                "severity": "success",
+                "to": 0
+              },
+              {
+                "from": 0,
+                "severity": "warning",
+                "to": 1000
+              },
+              {
+                "from": 1000,
+                "severity": "critical"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Oracle DB Locks Wait ",
+          "layout": {
+            "column": 11,
+            "row": 7,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ORACLE_DB_LOCK SELECT filter(count(*), WHERE STATUS in ('HOLD', '__WAIT')) AS 'DB Locks' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 24 hours ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 1
+              }
+            ]
+          }
+        },
+        {
+          "title": "Alerts ",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#0010f5",
+                  "seriesName": "Slow processing background job"
+                },
+                {
+                  "seriesName": "Transaction is running slow"
+                },
+                {
+                  "color": "#dcf80d",
+                  "seriesName": "ED3, vhed3ci_ED3_00, DIA"
+                }
+              ]
+            },
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NrAiIncident SELECT count(*) WHERE ('' = '' OR ('' != '' AND tags.sap.system = '')) AND event = 'open' AND priority = 'critical' FACET conditionName SINCE 1 day ago TIMESERIES 5 minutes"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Alerts  Opened on New Relic",
+          "layout": {
+            "column": 7,
+            "row": 10,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NrAiIncident SELECT openTime, conditionName, tags.entity.name, description, incidentId, incidentLink, nrqlQuery WHERE ('' = '' OR ('' != '' AND tags.sap.system = '')) AND event = 'open' AND priority = 'critical' SINCE 1 day ago LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "SAP Errors",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "logger.log-table-widget"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM Log SELECT SYS_ID, CATEGORY,SUBCATEGORY, message, INSTANCE, HOST_NAME WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) SINCE 1 day ago LIMIT MAX"
+              }
+            ]
+          }
+        },
+        {
+          "title": "ODATA Service Error",
+          "layout": {
+            "column": 1,
+            "row": 16,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_ODATA_SERVICE_ERROR SELECT * SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "IDOC Errors",
+          "layout": {
+            "column": 1,
+            "row": 19,
+            "width": 10,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_IDOC SELECT DOCNUM, STATUS, STATUS_DESCRIPTION, STATUS_TEXT, DIRECTION, MESSAGE_TYPE, RECEIVER_PARTNER_NUMBER, SENDER_PARTNER_NUMBER, Create_Time_Stamp, Change_Time_Stamp WHERE STATUS_LIGHT = 'RED' SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "AIF Error",
+          "layout": {
+            "column": 11,
+            "row": 19,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_AIF_ERROR SELECT count(*) AS 'Errors' WHERE SYS_ID IN (FROM lookup(NR_LKUP_SYSTEM) SELECT uniques(SYS_ID) WHERE Env IN ( {{ sel_env }}) ) FACET SYS_ID SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": [
+              {
+                "columnName": "Errors",
+                "from": 30,
+                "severity": "critical"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variables": [
+    {
+      "name": "sel_env",
+      "items": null,
+      "defaultValues": [
+        {
+          "value": {
+            "string": "*"
+          }
+        }
+      ],
+      "nrqlQuery": {
+        "accountIds": [],
+        "query": "SELECT uniques(Env) FROM lookup(NR_LKUP_SYSTEM)"
+      },
+      "options": {
+        "ignoreTimeRange": true,
+        "excluded": false
+      },
+      "title": "Environment",
+      "type": "NRQL",
+      "isMultiSelection": true,
+      "replacementStrategy": "STRING"
+    }
+  ]
+}

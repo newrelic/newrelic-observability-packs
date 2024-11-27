@@ -1,0 +1,1118 @@
+{
+  "name": "SAP-ST03N",
+  "description": null,
+  "pages": [
+    {
+      "name": "Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Avg Response Time Trend",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(RESPTI)/sum(COUNT) AS 'Avg Response Time' WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today FACET TASKTYPE TIMESERIES AUTO LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Number of Steps",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(COUNT) AS 'Num of Steps' WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today FACET TASKTYPE TIMESERIES AUTO LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Overview",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(COUNT) AS Steps,sum(RESPTI)/sum(COUNT) AS 'Avg RESPTI',sum(PROCTI)/sum(COUNT) AS 'Avg PROCTI',\nsum(CPUTI)/sum(COUNT) AS 'Avg CPUTI', sum(DBTI)/sum(COUNT) AS 'Avg DBTI', sum(DBP_TIME)/sum(DBP_COUNT) AS 'Avg DBP Time', \nsum(QUETI)/sum(COUNT) AS 'Avg WAITTI', sum(ROLLINTI)/sum(COUNT) AS 'Avg Roll-In', sum(ROLLWAITTI)/sum(COUNT) AS ROLLWAITTI,\nsum(LOADGENTI) / sum(COUNT) AS 'Avg Load & Gen TI', sum(LOCKTI) / sum(COUNT) AS 'Avg Lock TI', sum(CPICTI) / sum(COUNT) AS 'Avg CPIC TI',\nsum(GUINETTIME) /sum(COUNT) AS 'Avg Frontend Net TI', sum(GUITIME) / sum(COUNT) AS 'Avg GUI TI', sum(GUICNT) AS Trips,\nsum(BYTES) / 1000 AS KB, sum(VMC_CALL_COUNT) AS '# VMC Calls', sum(VMC_CPU_TIME) AS 'Ttl VMC CPU', sum(VMC_ELAP_TIME) AS 'Ttl VMC Elap',\n sum(VMC_CPU_TIME) /sum(VMC_CALL_COUNT) AS 'Avg VMC CPU', sum(VMC_ELAP_TIME) / sum(VMC_CALL_COUNT) AS 'Avg VMC Elap'\nWHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) FACET TASKTYPE SINCE today LIMIT MAX\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Database",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(READSEQCNT) AS SEQ_READ_CNT, sum(READSEQTI) AS SEQ_READTI,\nsum(READSEQTI) / sum(READSEQCNT) AS AVG_SEQ_READ_TI, sum(READDIRCNT) AS DIR_READ, sum(READDIRTI) AS DIR_READ_TI, \nsum(READDIRTI)/ sum(READDIRCNT) AS AVG_DIRREAD_TI, sum(CHNGCNT) AS '# Changes', sum(CHNGTI) AS 'Changes TI', \nsum(CHNGTI) / sum(CHNGCNT) AS 'Avg Changes TI', sum(READSEQCNT+READDIRCNT+CHNGCNT) AS '#Logic Calls', \nsum(READDIRTI+READSEQTI+CHNGTI) / sum(READSEQCNT+READDIRCNT+CHNGCNT) AS 'Avg DB Time', sum(PHYCALLS) AS '# Phy Reads',\nsum(PHYCHNGREC) AS 'PhyRecs', sum(READDIRBUF) AS 'DIRBUF', sum(DBP_COUNT) AS '# DBP Calls', sum(DBP_TIME) AS 'DBP TI',\nsum(DBP_TIME)/sum(DBP_COUNT) AS 'Avg DBP TI'\nFACET TASKTYPE WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nSINCE today "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Roll Information",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(ROLLINTI) / sum(COUNT) AS 'Avg Roll-In', sum(ROLLINTI) AS 'Ttl Rool-In Time', \nsum(ROLLOUTTI) AS 'Ttl Roll-Out Time' , sum(ROLLWAITTI) AS 'Ttl Roll Wait', sum(ROLLINCNT) AS '# Roll-In', sum(ROLLOUTCNT) AS '# Roll-Out',\nsum(ROLLINTI) / sum(ROLLINCNT) AS 'Avg Roll-In/Roll-In', sum(ROLLOUTTI)/sum(ROLLOUTCNT) AS 'Avg Roll-Out'\nFACET TASKTYPE WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nSINCE today "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Part of Times",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_WORKLOAD_OVERVIEW SELECT sum(RESPTI) / sum(COUNT) AS Avg_RESPTI, sum(PROCTI) / sum(COUNT) AS Avg_PROCTI,  \nsum(CPUTI) / sum(RESPTI) * 100 AS '% CPUTI', sum(READDIRTI+READSEQTI+CHNGTI) / sum(RESPTI) * 100 AS '% DBTI', \nsum(DBP_TIME) / sum(RESPTI) * 100 AS '% DBP TI', sum(QUEUETI) / sum(RESPTI) * 100 AS '% WAIT TI', sum(ROLLWAITTI)/sum(RESPTI) *100 AS '% ROLLTI' \nFACET TASKTYPE WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transaction Profile",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Standard/Time",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TRANSACTION_PROFILE SELECT sum(COUNT) AS Steps, sum(RESPTI) AS 'Resp TI',sum(RESPTI) / sum(COUNT) AS 'Avg Resp TI', \nsum(PROCTI) AS 'Proc TI', sum(PROCTI) / sum(COUNT) AS 'Avg Proc TI',  sum(CPUTI) AS 'CPU TI', sum(CPUTI) / sum(COUNT) AS 'Avg CPU TI', \nsum(READDIRTI+READSEQTI+CHNGTI) AS 'DB TI', sum(READDIRTI+READSEQTI+CHNGTI) /sum(COUNT) AS 'Avg DB TI', sum(DBP_TIME) AS 'DBP TI', sum(DBP_TIME) / sum(COUNT) AS 'Avg DBP TI', sum(ROLLWAITTI) AS 'Roll Wait TI', sum(ROLLWAITTI)/sum(COUNT) AS 'Avg Roll Wait TI', sum(QUEUETI) AS 'Wait Time', sum(QUEUETI) / sum(COUNT) AS 'Avg Wait TI', sum(GUICNT) AS Trips, sum(GUINETTIME) AS NET_TIME, sum(GUITIME)/sum(COUNT) AS AVG_GUITI,sum(VMC_CALL_COUNT) AS VMC_CALL, sum(VMC_CPU_TIME) AS TTL_VMCCPU, sum(VMC_ELAP_TIME) AS TTL_VMCELAP FACET TASKTYPE, OBJECT AS 'Report/Transaction', JOB_NAME WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Database",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TRANSACTION_PROFILE SELECT sum(READSEQCNT) AS SEQ_READ_CNT, sum(READSEQTI) AS SEQ_READTI,\nsum(READSEQTI) / sum(READSEQCNT) AS AVG_SEQ_READ_TI, sum(READDIRCNT) AS DIR_READ, sum(READDIRTI) AS DIR_READ_TI, \nsum(READDIRTI)/ sum(READDIRCNT) AS AVG_DIRREAD_TI, sum(CHNGCNT) AS '# Changes', sum(CHNGTI) AS 'Changes TI', \nsum(CHNGTI) / sum(CHNGCNT) AS 'Avg Changes TI', sum(READSEQCNT+READDIRCNT+CHNGCNT) AS '#Logic Calls', \nsum(READDIRTI+READSEQTI+CHNGTI) / sum(READSEQCNT+READDIRCNT+CHNGCNT) AS 'Avg DB Time', sum(PHYCALLS) AS '# Phy Reads',\nsum(PHYCHNGREC) AS 'PhyRecs', sum(READDIRBUF) AS 'DIRBUF', sum(DBP_COUNT) AS '# DBP Calls', sum(DBP_TIME) AS 'DBP TI',\nsum(DBP_TIME)/sum(DBP_COUNT) AS 'Avg DBP TI'\nFACET TASKTYPE, OBJECT AS 'Report/Transaction', JOB_NAME WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nSINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "GUI Time",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TRANSACTION_PROFILE SELECT sum(COUNT) AS Steps, sum(GUINETTIME) AS 'Frontend Net Time', sum(GUITIME) AS 'GUI Time',\nsum(GUICNT) AS Trips, sum(GUINETTIME) / sum(COUNT) AS 'Avg GUI Network Time', sum(GUITIME) /sum(COUNT) AS 'Avg GUI Time/Step', \nsum(GUITIME) / sum(GUICNT) AS 'Avg GUI Time/Trip'\nFACET TASKTYPE, OBJECT AS 'Report/Transaction', JOB_NAME WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nSINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Part of Times",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TRANSACTION_PROFILE SELECT sum(RESPTI) / sum(COUNT) AS Avg_RESPTI, sum(PROCTI) / sum(COUNT) AS Avg_PROCTI,  \nsum(CPUTI) / sum(RESPTI) * 100 AS '% CPUTI', sum(READDIRTI+READSEQTI+CHNGTI) / sum(RESPTI) * 100 AS '% DBTI', \nsum(DBP_TIME) / sum(RESPTI) * 100 AS '% DBP TI', sum(QUEUETI) / sum(RESPTI) * 100 AS '% WAIT TI', sum(ROLLWAITTI)/sum(RESPTI) *100 AS '% ROLLTI' \nFACET TASKTYPE, OBJECT AS 'Report/Transaction', JOB_NAME WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Time Profile",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Times (ms)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 5
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "initialSorting": {
+              "direction": "asc",
+              "name": "Hour of timestamp"
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TIME_PROFILE SELECT sum(COUNT) AS Steps, sum(RESPTI) AS 'Resp TI',sum(RESPTI) / sum(COUNT) AS 'Avg Resp TI', \nsum(PROCTI) AS 'Proc TI', sum(PROCTI) / sum(COUNT) AS 'Avg Proc TI',  sum(CPUTI) AS 'CPU TI', sum(CPUTI) / sum(COUNT) AS 'Avg CPU TI', \nsum(READDIRTI+READSEQTI+CHNGTI) AS 'DB TI', sum(READDIRTI+READSEQTI+CHNGTI) /sum(COUNT) AS 'Avg DB TI', sum(DBP_TIME) AS 'DBP TI', sum(DBP_TIME) / sum(COUNT) AS 'Avg DBP TI', sum(ROLLWAITTI) AS 'Roll Wait TI', sum(ROLLWAITTI)/sum(COUNT) AS 'Avg Roll Wait TI', sum(QUEUETI) AS 'Wait Time', sum(QUEUETI) / sum(COUNT) AS 'Avg Wait TI', sum(GUICNT) AS Trips, sum(GUINETTIME) AS 'Frontend Net TI', sum(GUITIME)/sum(COUNT) AS AVG_GUITI,sum(VMC_CALL_COUNT) AS VMC_CALL, sum(VMC_CPU_TIME) AS TTL_VMCCPU, sum(VMC_ELAP_TIME) AS TTL_VMCELAP  WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})  SINCE today FACET hourOf(timestamp, numeric) AS Hour LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Database",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TIME_PROFILE SELECT sum(READSEQCNT) AS SEQ_READ_CNT, sum(READSEQTI) AS SEQ_READTI,\nsum(READSEQTI) / sum(READSEQCNT) AS AVG_SEQ_READ_TI, sum(READDIRCNT) AS DIR_READ, sum(READDIRTI) AS DIR_READ_TI, \nsum(READDIRTI)/ sum(READDIRCNT) AS AVG_DIRREAD_TI, sum(CHNGCNT) AS '# Changes', sum(CHNGTI) AS 'Changes TI', \nsum(CHNGTI) / sum(CHNGCNT) AS 'Avg Changes TI', sum(READSEQCNT+READDIRCNT+CHNGCNT) AS '#Logic Calls', \nsum(READDIRTI+READSEQTI+CHNGTI) / sum(READSEQCNT+READDIRCNT+CHNGCNT) AS 'Avg DB Time', sum(PHYCALLS) AS '# Phy Reads',\nsum(PHYCHNGREC) AS 'PhyRecs', sum(READDIRBUF) AS 'DIRBUF', sum(DBP_COUNT) AS '# DBP Calls', sum(DBP_TIME) AS 'DBP TI',\nsum(DBP_TIME)/sum(DBP_COUNT) AS 'Avg DBP TI'\nFACET TASKTYPE WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nSINCE today "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Part of Times",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TIME_PROFILE SELECT sum(RESPTI) / sum(COUNT) AS Avg_RESPTI, sum(PROCTI) / sum(COUNT) AS Avg_PROCTI,  \nsum(CPUTI) / sum(RESPTI) * 100 AS '% CPUTI', sum(READDIRTI+READSEQTI+CHNGTI) / sum(RESPTI) * 100 AS '% DBTI', \nsum(DBP_TIME) / sum(RESPTI) * 100 AS '% DBP TI', sum(QUEUETI) / sum(RESPTI) * 100 AS '% WAIT TI', sum(ROLLWAITTI)/sum(RESPTI) *100 AS '% ROLLTI' \nFACET TASKTYPE WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today \n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "GUI Times",
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TRANSACTION_PROFILE SELECT sum(COUNT) AS Steps, sum(GUINETTIME) AS 'Frontend Net Time', sum(GUITIME) AS 'GUI Time',\nsum(GUICNT) AS Trips, sum(GUINETTIME) / sum(COUNT) AS 'Avg GUI Network Time', sum(GUITIME) /sum(COUNT) AS 'Avg GUI Time/Step', \nsum(GUITIME) / sum(GUICNT) AS 'Avg GUI Time/Trip'\nFACET TASKTYPE, OBJECT AS 'Report/Transaction', JOB_NAME WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nSINCE today "
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ranking List",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Hit List",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TOP_DIALOG SELECT TCODE, REPORT, TASKTYPE, TERMINALID, ACCOUNT AS User, DYNPRONR AS Screen, WPID, FCODE, RESPTI, PROCTI, QUETI AS WAITTI, CPUTI, ROLLWAITTI, READDIRTI+READSEQTI+CHNGTI AS 'DB TIME', DBP_TIME, LOCKTI, USEDBYTES, VMC_CALL_COUNT, VMC_CPU_TIME, VMC_ELAP_TIME WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "DB Hit List",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_TOP_DB_ACCESS SELECT TCODE, REPORT, TASKTYPE, TERMINALID, ACCOUNT AS User, DYNPRONR AS Screen, WPID, FCODE, DBCALLS AS '#Calls',\nREADSEQTI, READSEQCNT AS '#Sequential Read', READDIRTI, READDIRCNT, UPDTI, UPDCNT, VMC_CALL_COUNT, VMC_CPU_TIME, VMC_ELAP_TIME\nWHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today ORDER BY DBCALLS DESC LIMIT 25"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Memory",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Transaction",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_MEMORY SELECT sum(numeric(COUNTER)) as Steps, sum(numeric(MEMSUM))/sum(numeric(COUNTER))/1024 AS AVG_MEM, sum(numeric(PRIVSUM))/sum(numeric(COUNTER))/1024 AS AVG_PRIV_MEM, sum(numeric(USEDBYTES))/sum(numeric(COUNTER))/1024 AS 'AVG_EXT_MEM', max(numeric(MAXBYTES)) /1024 AS MAX_USED, max(numeric(MAXBYTESDI))/1024 AS MAX_USED_SDI FACET TASKTYPE, OBJECT AS 'Report/Transaction', JOB_NAME WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "User Memory(kb)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_MEMORY SELECT sum(COUNTER) as Steps, sum(MEMSUM)/sum(COUNTER)/1024 AS AVG_MEM, sum(PRIVSUM)/sum(COUNTER)/1024 AS AVG_PRIV_MEM, sum(USEDBYTES)/sum(COUNTER)/1024 AS 'AVG_EXT_MEM', max(MAXBYTES) /1024 AS MAX_USED, max(MAXBYTESDI)/1024 AS MAX_USED_SDI FACET ACCOUNT AS User WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "RFC",
+      "description": null,
+      "widgets": [
+        {
+          "title": "RFC Client",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_RFC_CLIENT SELECT sum(COUNTER) AS NUM_CALL, sum(EXE_TIME) AS EXETI, sum(EXE_TIME) / sum(COUNTER) AS AVG_EXETI, sum(CALL_TIME) AS CALLTI, sum(CALL_TIME) / sum(COUNTER) AS AVG_TIME, sum(SEND) AS SEND_DATA, sum(RECEIVE) AS RECEIVE_DATA FACET TASKTYPE, LOCAL_DEST, FUNC_NAME, JOB_NAME, USERID WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "RFC Dest Profile",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_RFC_DEST_PROFILE SELECT sum(COUNTER) AS NUM_CALL, sum(EXE_TIME) AS EXETI, sum(EXE_TIME) / sum(COUNTER) AS AVG_EXETI, sum(CALL_TIME) AS CALLTI, sum(CALL_TIME) / sum(COUNTER) AS AVG_TIME, sum(SEND) AS SEND_DATA, sum(RECEIVE) AS RECEIVE_DATA, count(*) AS NUM_RECORDS FACET TASKTYPE, LOCAL_DEST, OBJECT, OBJECT_TYPE, JOB_NAME, USERID WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "RFC Server",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_RFC_SERVER SELECT sum(COUNTER) AS NUM_CALL, sum(EXE_TIME) AS EXETI, sum(EXE_TIME) / sum(COUNTER) AS AVG_EXETI, sum(CALL_TIME) AS CALLTI, sum(CALL_TIME) / sum(COUNTER) AS AVG_TIME, sum(SEND) AS SEND_DATA, sum(RECEIVE) AS RECEIVE_DATA, count(*) AS NUM_RECORDS FACET TASKTYPE, REMOT_DEST, FUNC_NAME, JOB_NAME, USERID WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "RFC Client",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 4
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_RFC_CLIENT SELECT sum(COUNTER) AS NUM_CALL, sum(EXE_TIME) AS EXETI, sum(EXE_TIME) / sum(COUNTER) AS AVG_EXETI, sum(CALL_TIME) AS CALLTI, sum(CALL_TIME) / sum(COUNTER) AS AVG_TIME, sum(SEND) AS SEND_DATA, sum(RECEIVE) AS RECEIVE_DATA FACET FUNC_NAME WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Profile",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Summary User Transactions",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_USER_TCODE SELECT average(RESPTI/COUNT) AS 'Avg Response Time', sum(COUNT) AS Steps, sum(CPUTI) AS 'TTL CPU Time', sum(QUEUETI) AS 'TTL Wait Time', sum(READDIRTI+READSEQTI+CHNGTI) AS 'TTL DB Time' WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today FACET ACCOUNT, OBJECT LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "User Transactions",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_USER_TCODE SELECT sum(COUNT) AS Steps, sum(RESPTI) AS 'Resp TI',sum(RESPTI) / sum(COUNT) AS 'Avg Resp TI', \nsum(PROCTI) AS 'Proc TI', sum(PROCTI) / sum(COUNT) AS 'Avg Proc TI',  sum(CPUTI) AS 'CPU TI', sum(CPUTI) / sum(COUNT) AS 'Avg CPU TI', \nsum(READDIRTI+READSEQTI+CHNGTI) AS 'DB TI', sum(READDIRTI+READSEQTI+CHNGTI) /sum(COUNT) AS 'Avg DB TI', sum(DBP_TIME) AS 'DBP TI', sum(DBP_TIME) / sum(COUNT) AS 'Avg DBP TI', sum(ROLLWAITTI) AS 'Roll Wait TI', sum(ROLLWAITTI)/sum(COUNT) AS 'Avg Roll Wait TI', sum(QUEUETI) AS 'Wait Time', sum(QUEUETI) / sum(COUNT) AS 'Avg Wait TI', sum(GUICNT) AS Trips, sum(GUINETTIME) AS NET_TIME, sum(GUITIME)/sum(COUNT) AS AVG_GUITI,sum(VMC_CALL_COUNT) AS VMC_CALL, sum(VMC_CPU_TIME) AS TTL_VMCCPU, sum(VMC_ELAP_TIME) AS TTL_VMCELAP FACET TASKTYPE, ACCOUNT, OBJECT, OBJECT_TYPE, JOB_NAME WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX\n"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "DB Access ",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_USER_TCODE SELECT sum(READSEQCNT) AS SEQ_READ_CNT, sum(READSEQTI) AS SEQ_READTI,\nsum(READSEQTI) / sum(READSEQCNT) AS AVG_SEQ_READ_TI, sum(READDIRCNT) AS DIR_READ, sum(READDIRTI) AS DIR_READ_TI, \nsum(READDIRTI)/ sum(READDIRCNT) AS AVG_DIRREAD_TI, sum(CHNGCNT) AS '# Changes', sum(CHNGTI) AS 'Changes TI', \nsum(CHNGTI) / sum(CHNGCNT) AS 'Avg Changes TI', sum(READSEQCNT+READDIRCNT+CHNGCNT) AS '#Logic Calls', \nsum(READDIRTI+READSEQTI+CHNGTI) / sum(READSEQCNT+READDIRCNT+CHNGCNT) AS 'Avg DB Time', sum(PHYCALLS) AS '# Phy Reads',\nsum(PHYCHNGREC) AS 'PhyRecs', sum(READDIRBUF) AS 'DIRBUF', sum(DBP_COUNT) AS '# DBP Calls', sum(DBP_TIME) AS 'DBP TI',\nsum(DBP_TIME)/sum(DBP_COUNT) AS 'Avg DBP TI'\nFACET TASKTYPE, OBJECT AS 'Report/Transaction', JOB_NAME WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nSINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Memory Usage (KB)",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_MEMORY SELECT ACCOUNT, OBJECT, OBJECT_TYPE, JOB_NAME, COUNTER as Steps, MEMSUM/COUNTER/1024 AS AVG_MEM, PRIVSUM/COUNTER/1024 AS AVG_PRIV_MEM, USEDBYTES/COUNTER/1024 AS 'AVG_EXT_MEM', MAXBYTES /1024 AS MAX_USED, MAXBYTESDI/1024 AS MAX_USED_SDI, * WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Front End",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Frontend",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 6
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM NR_SAP_FRONTEND SELECT sum(numeric(COUNT)) AS Steps, sum(numeric(BYTESIN))/1024 AS Input_KB, sum(numeric(BYTESIN)) / sum(numeric(COUNT)) AS Avg_Input, sum(numeric(BYTESOUT))/1024 AS Output_KB, sum(numeric(BYTESOUT))/sum(numeric(COUNT)) AS Avg_Out, sum(numeric(GUINETTIME)) AS Net_Time, sum(numeric(GUINETIME))/sum(numeric(COUNT)) AS Avg_Net_Time, sum(numeric(GUITIME)) AS GUI_TIME, sum(numeric(GUITIME))/sum(numeric(GUICNT)) AS Avg_GUITIME, sum(numeric(GUICNT)) AS Trips WHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }}) FACET AHOST, PHOST SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Web Stats",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Web Client Statistics",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT sum(COUNTER) AS Calls, sum(CALLTIME) AS 'TTL Call TI', sum(EXECUTION_TI) AS 'TTL EXEC TI', sum(DATA_SEND) AS 'TTL Sent',\nsum(DATA_SEND_TI) AS 'Send TIME', sum(DATA_RECEIVE) AS 'TTL Received', sum(DATA_RECEIVE_TI) AS 'TTL Received Time',\nsum(CALLTIME) / sum(COUNTER) AS 'Avg Call TI', sum(EXECUTION_TI) / sum(COUNTER) AS 'Avg EXEC TI',\nsum(DATA_SEND) /sum(COUNTER) AS 'Avg Sent', sum(DATA_SEND_TI) / sum(COUNTER) AS 'Avg Send TI',\nsum(DATA_RECEIVE) / sum(COUNTER) AS 'Avg Received', sum(DATA_RECEIVE_TI) / sum(COUNTER) AS 'Avg Receive TI'\nFROM NR_SAP_WEB_CLINT_STATISTICS\nWHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nFACET PROTOCOL, HOST, PORT SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Web Client Destitation Statistics",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT sum(COUNTER) AS Calls, sum(CALLTIME) AS 'TTL Call TI', sum(EXECUTION_TI) AS 'TTL EXEC TI', sum(DATA_SEND) AS 'TTL Sent',\nsum(DATA_SEND_TI) AS 'Send TIME', sum(DATA_RECEIVE) AS 'TTL Received', sum(DATA_RECEIVE_TI) AS 'TTL Received Time',\nsum(CALLTIME) / sum(COUNTER) AS 'Avg Call TI', sum(EXECUTION_TI) / sum(COUNTER) AS 'Avg EXEC TI',\nsum(DATA_SEND) /sum(COUNTER) AS 'Avg Sent', sum(DATA_SEND_TI) / sum(COUNTER) AS 'Avg Send TI',\nsum(DATA_RECEIVE) / sum(COUNTER) AS 'Avg Received', sum(DATA_RECEIVE_TI) / sum(COUNTER) AS 'Avg Receive TI'\nFROM NR_SAP_WEB_CLINT_STATISTICS\nWHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nFACET PROTOCOL, HOST, PORT SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Web Server Statistics",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT sum(COUNTER) AS Calls, sum(CALLTIME) AS 'TTL Call TI', sum(EXECUTION_TI) AS 'TTL EXEC TI', sum(DATA_SEND) AS 'TTL Sent',\nsum(DATA_SEND_TI) AS 'Send TIME', sum(DATA_RECEIVE) AS 'TTL Received', sum(DATA_RECEIVE_TI) AS 'TTL Received Time',\nsum(CALLTIME) / sum(COUNTER) AS 'Avg Call TI', sum(EXECUTION_TI) / sum(COUNTER) AS 'Avg EXEC TI',\nsum(DATA_SEND) /sum(COUNTER) AS 'Avg Sent', sum(DATA_SEND_TI) / sum(COUNTER) AS 'Avg Send TI',\nsum(DATA_RECEIVE) / sum(COUNTER) AS 'Avg Received', sum(DATA_RECEIVE_TI) / sum(COUNTER) AS 'Avg Receive TI'\nFROM NR_SAP_WEB_SERVER_STATISTICS\nWHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nFACET PROTOCOL, HOST, PORT SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Web Server Destination",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT sum(COUNTER) AS Calls, sum(CALLTIME) AS 'TTL Call TI', sum(EXECUTION_TI) AS 'TTL EXEC TI', sum(DATA_SEND) AS 'TTL Sent',\nsum(DATA_SEND_TI) AS 'Send TIME', sum(DATA_RECEIVE) AS 'TTL Received', sum(DATA_RECEIVE_TI) AS 'TTL Received Time',\nsum(CALLTIME) / sum(COUNTER) AS 'Avg Call TI', sum(EXECUTION_TI) / sum(COUNTER) AS 'Avg EXEC TI',\nsum(DATA_SEND) /sum(COUNTER) AS 'Avg Sent', sum(DATA_SEND_TI) / sum(COUNTER) AS 'Avg Send TI',\nsum(DATA_RECEIVE) / sum(COUNTER) AS 'Avg Received', sum(DATA_RECEIVE_TI) / sum(COUNTER) AS 'Avg Receive TI',\nsum(LOGON_TI) AS 'Logon TI', sum(AUTHORIZATION_TI) AS 'Auth TI'\nFROM NR_SAP_WEB_CLINT_DESTINATION\nWHERE SYS_ID IN ({{sel_sysid}}) AND ({{ sel_tasktype }}  = 'ALL' OR TASKTYPE = {{ sel_tasktype }})\nFACET PROTOCOL, HOST, PORT SINCE today LIMIT MAX"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "DB Connection Stats",
+      "description": null,
+      "widgets": [
+        {
+          "title": "DB Access",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 4
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT * FROM NR_SAP_TOP_DB_ACCESS WHERE SYS_ID = {{ sel_sysid }} AND ({{ sel_tasktype}} = 'ALL' OR TASKTYPE = {{ sel_tasktype}} ) SINCE today"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Spool",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Spool Statistics",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT sum(COUNT) AS Steps, sum(RESPTI) AS 'Response Time' FROM NR_SAP_SPOOL_STATISTICS FACET CASES (where CURRMODE = '-' as 'Idle', where CURRMODE = 'Q' AS 'Request') WHERE SYS_ID = {{ sel_sysid }} AND ({{ sel_tasktype}} = 'ALL' OR TASKTYPE = {{ sel_tasktype}} ) SINCE today"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variables": [
+    {
+      "name": "sel_tasktype",
+      "items": [
+        {
+          "title": null,
+          "value": "ALL"
+        },
+        {
+          "title": null,
+          "value": "ALE"
+        },
+        {
+          "title": null,
+          "value": "AUTOABAP"
+        },
+        {
+          "title": null,
+          "value": "AUTOCCMS"
+        },
+        {
+          "title": null,
+          "value": "AUTORFC"
+        },
+        {
+          "title": null,
+          "value": "AUTOTH"
+        },
+        {
+          "title": null,
+          "value": "BACKGROUND"
+        },
+        {
+          "title": null,
+          "value": "BGRFC Scheduler"
+        },
+        {
+          "title": null,
+          "value": "BGRFC Unit"
+        },
+        {
+          "title": null,
+          "value": "BUFFER SYNC"
+        },
+        {
+          "title": null,
+          "value": "DDLOG CLEANUP"
+        },
+        {
+          "title": null,
+          "value": "DEL. THCALL"
+        },
+        {
+          "title": null,
+          "value": "DIALOG"
+        },
+        {
+          "title": null,
+          "value": "HTTP"
+        },
+        {
+          "title": null,
+          "value": "LR.RFC"
+        },
+        {
+          "title": null,
+          "value": "OTHER"
+        },
+        {
+          "title": null,
+          "value": "RFC"
+        },
+        {
+          "title": null,
+          "value": "RPCTH"
+        },
+        {
+          "title": null,
+          "value": "SPOOL"
+        },
+        {
+          "title": null,
+          "value": "UPDATE"
+        },
+        {
+          "title": null,
+          "value": "WS-HTTP"
+        },
+        {
+          "title": null,
+          "value": "WS-RFC"
+        }
+      ],
+      "defaultValues": [
+        {
+          "value": {
+            "string": "ALL"
+          }
+        }
+      ],
+      "nrqlQuery": null,
+      "options": {
+        "excluded": false
+      },
+      "title": "Task Type",
+      "type": "ENUM",
+      "isMultiSelection": false,
+      "replacementStrategy": "STRING"
+    },
+    {
+      "name": "sel_sysid",
+      "items": null,
+      "defaultValues": [],
+      "nrqlQuery": {
+        "accountIds": [],
+        "query": "SELECT SYS_ID FROM lookup(NR_LKUP_SYSTEM)"
+      },
+      "options": {
+        "ignoreTimeRange": true,
+        "excluded": false
+      },
+      "title": "SYSTEM",
+      "type": "NRQL",
+      "isMultiSelection": false,
+      "replacementStrategy": "STRING"
+    }
+  ]
+}

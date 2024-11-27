@@ -46,8 +46,11 @@ alertPolicies:
 dashboards:
   - nrm4sap
   - nrm4sap-cockpit
+  - nrm4sap-dash32
   - nrm4sap-datacollect
   - nrm4sap-datasize
+  - nrm4sap-glance
+  - nrm4sap-st03n
 # Documentation references
 documentation:
   - name: New Relic Monitoring for SAP® Solutions
