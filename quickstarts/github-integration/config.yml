@@ -1,0 +1,21 @@
+
+slug: github-integration
+description: |
+  ## Why use GitHub Integration?
+
+  Implementing a New Relic Service Catalog can unlock considerable benefits, but it requires considerable time and resources. You have to take care of team orchestration, user provisioning, role assignments, and entity ownership delineation. These create a significant threshold for entry. To ease this challenge, consider an automation solution that capitalizes on existing team configurations and relationships maintained in external systems such as GitHub. This simplifies the initial configuration and accelerates the adoption of the New Relic Service Catalog.
+
+  ## Get started!
+
+  Head over to the Integrations and Agents tab in New Relic page and check for Github Integration to get started.
+summary: |
+  Seamlessly adopt New Relic Service catalog with the GitHub Integration.
+icon: logo.png
+level: New Relic
+authors:
+  - New Relic
+title: GitHub Integration
+dataSourceIds:
+  - github-integration
+keywords:
+  - open source monitoring

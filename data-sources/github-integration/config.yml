@@ -1,0 +1,17 @@
+id: github-integration
+displayName: GitHub Integration
+description: |
+  Seamlessly adopt New Relic Service catalog with the GitHub Integration.
+icon: logo.png
+install:
+  primary:
+    nerdlet:
+      nerdletId: marketplace.install-data-source
+      nerdletState:
+        dataSourceId: github-integration
+        frameworkConfigId: github-integration
+      requiresAccount: false
+keywords:
+  - github integration
+  - github
+  - integration
