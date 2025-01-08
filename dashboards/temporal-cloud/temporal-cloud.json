@@ -1,9 +1,9 @@
 {
-  "name": "Temporal Cloud",
+  "name": "Temporal Cloud V2",
   "description": null,
   "pages": [
     {
-      "name": "Temporal Cloud",
+      "name": "Overview",
       "description": null,
       "widgets": [
         {
@@ -23,16 +23,16 @@
           }
         },
         {
-          "title": "Terminated Workflows",
+          "title": "Workflow Success",
           "layout": {
             "column": 3,
             "row": 1,
             "width": 5,
-            "height": 4
+            "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.area"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "facet": {
@@ -44,25 +44,34 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "FROM temporalCloudWorkflowTerminate SELECT latest(`data.result-value1`) AS 'temporal_cloud_v0_workflow_terminate_count' WHERE `data.result-metric-__name__` LIKE 'temporal_cloud_v0_workflow_terminate_count' AND `data.result-metric-temporal_namespace` IN ({{namespace}}) TIMESERIES AUTO"
+                "query": "FROM temporalCloudWorkflowSuccess SELECT max(`data.result-value1`) AS 'Workflow Success' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
             }
           }
         },
         {
-          "title": "Service Latency",
+          "title": "Frontend Errors and Rate Limiting",
           "layout": {
             "column": 8,
             "row": 1,
             "width": 5,
-            "height": 4
+            "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.stacked-bar"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "facet": {
@@ -74,14 +83,24 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "FROM temporalCloudServiceLatencyCount SELECT latest(`data.result-value1`) AS 'temporal_cloud_v0_service_latency_count' WHERE `data.result-metric-__name__` LIKE 'temporal_cloud_v0_service_latency_count' AND `data.result-metric-temporal_namespace` IN ({{namespace}}) TIMESERIES AUTO "
+                "query": "FROM temporalCloudResourceExhaustedErrors SELECT max(`data.result-value1`) AS 'Resource Exhausted' FACET `data.result-metric-temporal_namespace`, `data.result-metric-resource_exhausted_cause` AS cause AS namespace TIMESERIES 1 minute"
+              },
+              {
+                "accountIds": [],
+                "query": "FROM temporalCloudFrontendServiceError SELECT max(`data.result-value1`) AS 'Frontend Errors' FACET `data.result-metric-temporal_namespace` AS namespace, `data.result-metric-operation` AS operation TIMESERIES 1 minute"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
             },
-            "units": {
-              "unit": "MS"
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
             }
           }
         },
@@ -91,7 +110,7 @@
             "column": 1,
             "row": 2,
             "width": 2,
-            "height": 3
+            "height": 2
           },
           "linkedEntityGuids": null,
           "visualization": {
@@ -102,20 +121,20 @@
           }
         },
         {
-          "title": "Rate of Poll Success and Sync",
+          "title": "Temporal Cloud State Transitions",
           "layout": {
             "column": 1,
-            "row": 5,
+            "row": 4,
             "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.pie"
+            "id": "viz.area"
           },
           "rawConfiguration": {
             "facet": {
-              "showOtherSeries": true
+              "showOtherSeries": false
             },
             "legend": {
               "enabled": true
@@ -123,7 +142,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "FROM temporalCloudPollSuccess, temporalCloudPollSuccessSync SELECT rate(latest(`data.result-value1`),1 minute ) FACET `data.result-metric-__name__`, `data.result-metric-temporal_namespace` WHERE `data.result-metric-temporal_namespace` IN ({{namespace}})"
+                "query": "FROM temporalCloudStateTransition SELECT max(`data.result-value1`) AS 'State Transitions' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
               }
             ],
             "platformOptions": {
@@ -132,10 +151,64 @@
           }
         },
         {
-          "title": "Total Number of Successful Scheduled Actions",
+          "title": "Last 24 Hour State Transitions",
           "layout": {
             "column": 7,
-            "row": 5,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM temporalCloudStateTransition SELECT max(`data.result-value1`) AS transitions FACET `data.result-metric-temporal_namespace` AS namespace SINCE 1 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": true
+            }
+          }
+        },
+        {
+          "title": "Last 7 Days State Transitions",
+          "layout": {
+            "column": 10,
+            "row": 4,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM temporalCloudStateTransition SELECT max(`data.result-value1`) AS transitions FACET `data.result-metric-temporal_namespace` AS namespace SINCE 7 day ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": true
+            }
+          }
+        },
+        {
+          "title": "Temporal Cloud Total Actions",
+          "layout": {
+            "column": 1,
+            "row": 7,
             "width": 6,
             "height": 3
           },
@@ -153,7 +226,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "FROM temporalCloudScheduleActionSuccess SELECT average(`data.result-value1`) AS 'temporal_cloud_v0_schedule_action_success_count' WHERE `data.result-metric-temporal_namespace` IN ({{namespace}}) AND `data.result-metric-__name__` LIKE 'temporal_cloud_v0_schedule_action_success_count' TIMESERIES AUTO"
+                "query": "FROM temporalCloudTotalAction SELECT max(`data.result-value1`) AS 'Actions' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
               }
             ],
             "platformOptions": {
@@ -162,109 +235,70 @@
           }
         },
         {
-          "title": "Frontend Service Errors",
+          "title": "Last 24 Hour Actions",
           "layout": {
-            "column": 1,
-            "row": 8,
-            "width": 5,
+            "column": 7,
+            "row": 7,
+            "width": 3,
             "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.area"
+            "id": "viz.bar"
           },
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
             },
-            "legend": {
-              "enabled": true
-            },
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "FROM temporalCloudFrontendServiceError SELECT latest(`data.result-value1`) AS 'temporal_cloud_v0_frontend_service_error_count' WHERE `data.result-metric-__name__` LIKE 'temporal_cloud_v0_frontend_service_error_count' AND `data.result-metric-temporal_namespace` IN ({{namespace}}) TIMESERIES AUTO"
+                "query": "FROM temporalCloudTotalAction SELECT max(`data.result-value1`) AS actions FACET `data.result-metric-temporal_namespace` AS namespace SINCE 1 day ago"
               }
             ],
             "platformOptions": {
-              "ignoreTimeRange": false
+              "ignoreTimeRange": true
             }
           }
         },
         {
-          "title": "Frontend Service Requests",
-          "layout": {
-            "column": 6,
-            "row": 8,
-            "width": 4,
-            "height": 3
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.area"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountIds": [],
-                "query": "FROM temporalCloudFrontendServiceRequest SELECT latest(`data.result-value1`) AS 'temporal_cloud_v0_frontend_service_request_count' WHERE `data.result-metric-__name__` LIKE 'temporal_cloud_v0_frontend_service_request_count' AND `data.result-metric-temporal_namespace` IN ({{namespace}}) TIMESERIES AUTO "
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "units": {
-              "unit": "COUNT"
-            }
-          }
-        },
-        {
-          "title": "Failed Workflows",
+          "title": "Last 7 Days Actions",
           "layout": {
             "column": 10,
-            "row": 8,
+            "row": 7,
             "width": 3,
             "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.area"
+            "id": "viz.bar"
           },
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
             },
-            "legend": {
-              "enabled": true
-            },
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "FROM temporalCloudWorkflowFailed SELECT latest(`data.result-value1`) AS 'temporal_cloud_v0_workflow_failed_count' WHERE `data.result-metric-__name__` LIKE 'temporal_cloud_v0_workflow_failed_count' AND `data.result-metric-temporal_namespace` IN ({{namespace}}) TIMESERIES AUTO"
+                "query": "FROM temporalCloudTotalAction SELECT max(`data.result-value1`) AS actions FACET `data.result-metric-temporal_namespace` AS namespace SINCE 7 day ago"
               }
             ],
             "platformOptions": {
-              "ignoreTimeRange": false
+              "ignoreTimeRange": true
             }
           }
         },
         {
-          "title": "Resource Exhausted Errors",
+          "title": "Temporal Cloud Start Workflow Latency p95",
           "layout": {
             "column": 1,
-            "row": 11,
+            "row": 10,
             "width": 3,
             "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.stacked-bar"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "facet": {
@@ -276,25 +310,37 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "FROM temporalCloudResourceExhaustedErrors SELECT latest(`data.result-value1`) AS 'temporal_cloud_v0_resource_exhausted_error_count' WHERE `data.result-metric-__name__` LIKE 'temporal_cloud_v0_resource_exhausted_error_count' AND `data.result-metric-temporal_namespace` IN ({{namespace}}) TIMESERIES AUTO"
+                "query": "SELECT max(`data.result-value1`) AS 'Start Workflow P95 Latency' FROM temporalCloudWorkflowExecutionLatencySecP95 WHERE `data.result-metric-operation` = 'StartWorkflowExecution' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "units": {
+              "unit": "SECONDS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
             }
           }
         },
         {
-          "title": "Canceled Workflows",
+          "title": "Temporal Cloud Signal Workflow Latency p95",
           "layout": {
             "column": 4,
-            "row": 11,
-            "width": 4,
+            "row": 10,
+            "width": 3,
             "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.area"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "facet": {
@@ -306,29 +352,41 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "FROM temporalCloudWorkflowCancel SELECT latest(`data.result-value1`) AS 'temporal_cloud_v0_workflow_cancel_count' WHERE `data.result-metric-__name__` LIKE 'temporal_cloud_v0_workflow_cancel_count' AND `data.result-metric-temporal_namespace` IN ({{namespace}}) TIMESERIES AUTO"
+                "query": "SELECT max(`data.result-value1`) AS 'Signal Workflow P95 Latency' FROM temporalCloudWorkflowExecutionLatencySecP95 WHERE `data.result-metric-operation` = 'SignalWorkflowExecution' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "units": {
+              "unit": "SECONDS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
             }
           }
         },
         {
-          "title": "Namespace State Transitions",
+          "title": "Temporal Cloud Signal With Start Workflow Latency p95",
           "layout": {
-            "column": 8,
-            "row": 11,
-            "width": 5,
+            "column": 7,
+            "row": 10,
+            "width": 3,
             "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.pie"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "facet": {
-              "showOtherSeries": true
+              "showOtherSeries": false
             },
             "legend": {
               "enabled": true
@@ -336,179 +394,119 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "FROM temporalCloudStateTransition SELECT latest(`data.result-value1`) WHERE `data.result-metric-__name__`LIKE 'temporal_cloud_v0_state_transition_count' FACET `data.result-metric-temporal_namespace`  "
+                "query": "SELECT max(`data.result-value1`) AS 'Signal With Start P95 Latency' FROM temporalCloudWorkflowExecutionLatencySecP95 WHERE `data.result-metric-operation` = 'SignalWithStartWorkflowExecution' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "units": {
+              "unit": "SECONDS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Temporal Cloud Mutli Region Namespace Replication Lag",
+          "layout": {
+            "column": 10,
+            "row": 10,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT max(`data.result-value1`) AS ReplicationLagP95 FROM temporalCloudReplicationLagSecP95 FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES AUTO"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "units": {
+              "unit": "SECONDS"
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Frontend Requests by Operation",
+          "layout": {
+            "column": 1,
+            "row": 13,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM temporalCloudFrontendServiceRequest SELECT max(`data.result-value1`) AS 'Frontend Requests' FACET `data.result-metric-temporal_namespace` AS namespace, `data.result-metric-operation` AS operation TIMESERIES 1 minute"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
             }
           }
         }
       ]
     },
     {
-      "name": "Infrastructure",
+      "name": "Workflows, Workers and Tasks",
       "description": null,
       "widgets": [
         {
-          "title": "CPU Usage (%)",
+          "title": "Workflow Success",
           "layout": {
             "column": 1,
             "row": 1,
-            "width": 4,
-            "height": 3
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountIds": [],
-                "query": "SELECT average(cpuPercent) AS `CPU used %` FROM SystemSample TIMESERIES AUTO"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "thresholds": {
-              "isLabelVisible": true
-            },
-            "yAxisLeft": {
-              "max": 100,
-              "min": 0,
-              "zero": true
-            },
-            "yAxisRight": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Memory Usage (%)",
-          "layout": {
-            "column": 5,
-            "row": 1,
-            "width": 4,
-            "height": 3
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountIds": [],
-                "query": "SELECT average(memoryUsedPercent) AS `Memory used %` FROM SystemSample TIMESERIES AUTO"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "thresholds": {
-              "isLabelVisible": true
-            },
-            "yAxisLeft": {
-              "max": 100,
-              "min": 0,
-              "zero": true
-            },
-            "yAxisRight": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Storage Usage (%)",
-          "layout": {
-            "column": 9,
-            "row": 1,
-            "width": 4,
-            "height": 3
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.line"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": false
-            },
-            "nrqlQueries": [
-              {
-                "accountIds": [],
-                "query": "SELECT average(diskUsedPercent) AS `Storage used %` FROM StorageSample TIMESERIES AUTO"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            },
-            "thresholds": {
-              "isLabelVisible": true
-            },
-            "yAxisLeft": {
-              "max": 100,
-              "min": 0,
-              "zero": true
-            },
-            "yAxisRight": {
-              "zero": true
-            }
-          }
-        },
-        {
-          "title": "Network Traffic",
-          "layout": {
-            "column": 1,
-            "row": 4,
-            "width": 4,
-            "height": 3
-          },
-          "linkedEntityGuids": null,
-          "visualization": {
-            "id": "viz.area"
-          },
-          "rawConfiguration": {
-            "facet": {
-              "showOtherSeries": false
-            },
-            "legend": {
-              "enabled": true
-            },
-            "nrqlQueries": [
-              {
-                "accountIds": [],
-                "query": "SELECT average(transmitBytesPerSecond) AS `Transmit bytes per second`, average(receiveBytesPerSecond) AS `Receive bytes per second` FROM NetworkSample TIMESERIES AUTO"
-              }
-            ],
-            "platformOptions": {
-              "ignoreTimeRange": false
-            }
-          }
-        },
-        {
-          "title": "Load Average",
-          "layout": {
-            "column": 5,
-            "row": 4,
-            "width": 4,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
@@ -525,7 +523,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT average(loadAverageOneMinute) AS `1 minute`, average(loadAverageFiveMinute) AS `5 minutes`, average(loadAverageFifteenMinute) AS `15 minutes` FROM SystemSample TIMESERIES AUTO"
+                "query": "FROM temporalCloudWorkflowSuccess SELECT max(`data.result-value1`) AS 'Workflow Success' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
               }
             ],
             "platformOptions": {
@@ -543,57 +541,241 @@
           }
         },
         {
-          "title": "Processes Running",
+          "title": "Workflow Failed",
           "layout": {
-            "column": 9,
-            "row": 4,
-            "width": 4,
+            "column": 7,
+            "row": 1,
+            "width": 6,
             "height": 3
           },
           "linkedEntityGuids": null,
           "visualization": {
-            "id": "viz.table"
+            "id": "viz.line"
           },
           "rawConfiguration": {
             "facet": {
               "showOtherSeries": false
             },
+            "legend": {
+              "enabled": true
+            },
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT latest(cpuPercent) AS `CPU %`, latest(threadCount) AS `Threads` FROM ProcessSample FACET processId, processDisplayName ORDER BY cpuPercent asc LIMIT 100"
+                "query": "FROM temporalCloudWorkflowFailed SELECT max(`data.result-value1`) AS 'Workflow Failed' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
               }
             ],
             "platformOptions": {
               "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Workflow Continued As New",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM temporalCloudWorkflowContinued SELECT max(`data.result-value1`) AS 'Workflow Continued As New' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Workflow Timeouts",
+          "layout": {
+            "column": 7,
+            "row": 4,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM temporalCloudWorkflowTimeout SELECT max(`data.result-value1`) AS 'Workflow Timeouts' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Worker Poll Success",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM temporalCloudPollSuccess SELECT max(`data.result-value1`) AS 'Worker Poll Success' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Worker Poll Timeout",
+          "layout": {
+            "column": 7,
+            "row": 7,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM temporalCloudPollTimeout SELECT max(`data.result-value1`) AS 'Worker Poll Timeout' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Worker Poll Success Sync",
+          "layout": {
+            "column": 1,
+            "row": 10,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "FROM temporalCloudPollSuccessSync SELECT max(`data.result-value1`) AS 'Worker Poll Success Sync' FACET `data.result-metric-temporal_namespace` AS namespace TIMESERIES 1 minute"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "thresholds": {
+              "isLabelVisible": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "yAxisRight": {
+              "zero": true
             }
           }
         }
       ]
     }
   ],
-  "variables": [
-    {
-      "name": "namespace",
-      "items": null,
-      "defaultValues": [
-        {
-          "value": {
-            "string": "*"
-          }
-        }
-      ],
-      "nrqlQuery": {
-        "accountIds": [],
-        "query": "SELECT uniques(`data.result-metric-temporal_namespace`) FROM temporalCloudServiceLatencyCount  SINCE 6 weeks ago"
-      },
-      "options": {
-        "ignoreTimeRange": true
-      },
-      "title": "Namespace",
-      "type": "NRQL",
-      "isMultiSelection": true,
-      "replacementStrategy": "STRING"
-    }
-  ]
+  "variables": []
 }
